@@ -1,0 +1,33 @@
+{
+  "name": "pi",
+  "version": "1.0.0",
+  "description": "### Integrantes: * André Coêlho * Letícia Caroline",
+  "main": "index.js",
+  "bin": {
+    "pi": "bin/server.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alcbcoelho/pi-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alcbcoelho/pi-backend/issues"
+  },
+  "homepage": "https://github.com/alcbcoelho/pi-backend#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "jest": "^29.0.1",
+    "supertest": "^6.2.4"
+  }
+}
