@@ -54,6 +54,7 @@ router.delete("/:id", (req, res, next) => {
     res.status(204).end();
     // res.json(playlists); // checagem
   }
+  res.status(404).send("ERRO: Playlist não encontrada.");
 });
 
 module.exports = router;
