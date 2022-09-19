@@ -1,4 +1,5 @@
 const express = require("express");
+const { errorMessage } = require("../data");
 const router = express.Router();
 
 const playlists = [
@@ -7,19 +8,19 @@ const playlists = [
 
 let idGen = 0;
 
-router.use(express.json());
-
+// GET
 router.get("/", (req, res, next) => {
   playlists.length && res.status(200).json(playlists);
-  res.status(404).send("ERRO: Não há playlists disponíveis.");
+  res.status(404).send(errorMessage.playlists[1]);
 });
 router.get("/:id", (req, res, next) => {
   const playlist = playlists.find(element => element.id === +req.params.id);
 
   playlist && res.json(playlist);
-  res.status(404).send("ERRO: Playlist não encontrada.");
+  res.status(404).send(errorMessage.playlists[0]);
 });
 
+// POST
 router.post("/", (req, res, next) => {
   idGen++;
 
@@ -30,6 +31,7 @@ router.post("/", (req, res, next) => {
   res.status(201).json(playlists);
 });
 
+// PUT
 router.put("/:id", (req, res, next) => {
   let index = playlists.findIndex(element => element.id === +req.params.id);
 
@@ -46,6 +48,7 @@ router.put("/:id", (req, res, next) => {
   }
 });
 
+// DELETE
 router.delete("/:id", (req, res, next) => {
   const index = playlists.findIndex(element => element.id === +req.params.id);
 
@@ -54,7 +57,7 @@ router.delete("/:id", (req, res, next) => {
     res.status(204).end();
     // res.json(playlists); // checagem
   }
-  res.status(404).send("ERRO: Playlist não encontrada.");
+  res.status(404).send(errorMessage.playlists[0]);
 });
 
 module.exports = router;

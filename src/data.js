@@ -22,7 +22,7 @@ const artists = [
   // 5
   {
     name: "Black Sabbath",
-    songs: ["Heaven and Hell", "Iron Man", "War Pigs"],
+    songs: ["Heaven and Hell", "Iron Man", "Laguna Sunrise", "War Pigs"],
   },
   // 6
   {
@@ -61,7 +61,7 @@ const artists = [
   // 12
   {
     name: "Iron Maiden",
-    songs: ["2 Minutes to Midnight", "Fear of the Dark", "Wrathchild"],
+    songs: ["Fear of the Dark", "The Trooper", "Transylvania"],
   },
   // 13
   {
@@ -82,7 +82,7 @@ const artists = [
   // 16
   {
     name: "Ramones",
-    songs: ["Blitzkrieg Bop", "Pet Sematary", "Poison Heart"],
+    songs: ["Blitzkrieg Bop", "I Wanna Be Sedated", "Pet Sematary"],
   },
   // 17
   {
@@ -109,6 +109,12 @@ const artists = [
     name: "Van Halen",
     songs: ["Eruption", "Jump", "Panama"],
   },
+  //////////////////////////////////////////
+  // 22
+  {
+    name: "Pearl Jam",
+    songs: ["Alive", "Black", "Even Flow"]
+  }
 ];
 
 const errorMessage = {
