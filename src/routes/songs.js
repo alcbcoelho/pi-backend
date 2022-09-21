@@ -13,17 +13,14 @@ songs.length && songs.forEach((element, index) => (element.id = index + 1));
 //   res.status(404).send(errorMessage.songs[1]);
 // });
 router.get("/", (req, res, next) => {
-  const song = songs.find(element => element.name.toLowerCase() === req.query.name.toLowerCase());  // wtf
+  const songByName = songs.filter(element => element.name?.toLowerCase() === req.query.name?.toLowerCase());
+  const songByArtist = songs.filter(element => element.artist?.toLowerCase() === req.query.artist?.toLowerCase());
 
-  console.log(song);
+  songByName && res.status(200).json(songByName);
+  req.query.name && res.status(404).send(errorMessage.songs[0]);
 
-  res.status(200).send(song);
-
-  // song && res.status(200).json(song);
-  // req.query.name && res.status(404).send(errorMessage.songs[0]);
-
-  // songs.length && res.status(200).json(songs);
-  // res.status(404).send(errorMessage.songs[1]);
+  songs.length && res.status(200).json(songs);
+  res.status(404).send(errorMessage.songs[1]);
 });
 router.get("/:id", (req, res, next) => {
   const artist = songs.find(element => element.id === +req.params.id); //
