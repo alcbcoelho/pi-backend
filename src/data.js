@@ -225,6 +225,7 @@ const songs = [
 ];
 
 const errorMessage = {
+  caption: '<b><span style="color: #ff0000;">ERRO:</span></b> ',
   artists: [
     "Artista especificado não encontrado.",
   ],

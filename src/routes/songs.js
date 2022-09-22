@@ -26,25 +26,25 @@ router.get("/", (req, res, next) => {
 
       res.status(200).json(song);
     } else {
-      songByName.length && res.status(404).send("<b>ERROR:</b> " + errorMessage.artists[0]);
-      songByArtist.length && res.status(404).send("<b>ERROR:</b> " + errorMessage.songs[0]);
+      songByName.length && res.status(404).send(errorMessage.caption + errorMessage.artists[0]);
+      songByArtist.length && res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
       res
         .status(404)
-        .send(`<b>ERROR:</b> ${errorMessage.artists[0]}<br><br>${errorMessage.songs[0]}`);
+        .send(`<b>ERRO:</b> ${errorMessage.artists[0]}<br><br>${errorMessage.songs[0]}`);
     }
   } else if (req.query.name) {
     if (songByName.length) {
       songByName.length === 1 && res.status(200).json(...songByName);
       res.status(200).json(songByName);
-    } else res.status(404).send("<b>ERROR:</b> " + errorMessage.songs[0]);
+    } else res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
   } else if (req.query.artist) {
     if (songByArtist.length) {
       songByArtist.length === 1 && res.status(200).json(...songByArtist);
       res.status(200).json(songByArtist);
-    } else res.status(404).send("<b>ERROR:</b> " + errorMessage.artists[0]);
+    } else res.status(404).send(errorMessage.caption + errorMessage.artists[0]);
   } else {
     songs.length && res.status(200).json(songs);
-    res.status(404).send("<b>ERROR:</b> " + errorMessage.songs[1]);
+    res.status(404).send(errorMessage.caption + errorMessage.songs[1]);
   }
 });
 
@@ -52,7 +52,7 @@ router.get("/:id", (req, res, next) => {
   const artist = songs.find(element => element.id === +req.params.id); //
 
   artist && res.status(200).json(artist);
-  res.status(404).send("<b>ERROR:</b> " + errorMessage.songs[0]);
+  res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
 });
 
 // POST (wip)
