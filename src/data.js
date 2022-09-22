@@ -225,7 +225,7 @@ const songs = [
 
 const errorMessage = {
   artists: [
-    "ERRO: Artista não encontrado.",
+    "ERRO: Artista especificado não encontrado.",
     "ERRO: Não há artistas disponíveis.",
   ],
   playlists: [
