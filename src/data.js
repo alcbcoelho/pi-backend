@@ -227,7 +227,6 @@ const songs = [
 const errorMessage = {
   artists: [
     "ERRO: Artista especificado não encontrado.",
-    "ERRO: Não há artistas disponíveis.",
   ],
   playlists: [
     "ERRO: Playlist não encontrada.",
@@ -239,6 +238,8 @@ const errorMessage = {
     "ERRO: Não há usuários disponíveis.",
   ],
 };
+
+// ^ pensando em tirar os "ERRO" daqui e colocá-los nos métodos send (routes/songs.js - l33 p/ o motivo)
 
 module.exports = { artists, songs, errorMessage };
 
