@@ -226,16 +226,16 @@ const songs = [
 
 const errorMessage = {
   artists: [
-    "ERRO: Artista especificado não encontrado.",
+    "Artista especificado não encontrado.",
   ],
   playlists: [
-    "ERRO: Playlist não encontrada.",
-    "ERRO: Não há playlists disponíveis.",
+    "Playlist não encontrada.",
+    "Não há playlists disponíveis.",
   ],
-  songs: ["ERRO: Música não encontrada.", "ERRO: Não há músicas disponíveis."],
+  songs: ["Música não encontrada.", "Não há músicas disponíveis."],
   users: [
-    "ERRO: Usuário não encontrado.",
-    "ERRO: Não há usuários disponíveis.",
+    "Usuário não encontrado.",
+    "Não há usuários disponíveis.",
   ],
 };
 
