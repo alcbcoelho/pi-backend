@@ -16,15 +16,16 @@ router.get("/", (req, res, next) => {
   const songByName = songs.filter(element => element.name?.toLowerCase() === req.query.name?.toLowerCase());
   const songByArtist = songs.filter(element => element.artist?.toLowerCase() === req.query.artist?.toLowerCase());
 
-  songByName.length && songByArtist.length && res.status(200).json(songs.find(element => element.name?.toLowerCase() === req.query.name?.toLowerCase() && element.artist?.toLowerCase() === req.query.artist?.toLowerCase()))
+  songByName.length && songByArtist.length && res.status(200).json(songs.find(element => element.name?.toLowerCase() === req.query.name?.toLowerCase() && element.artist?.toLowerCase() === req.query.artist?.toLowerCase()));
 
+  songByName.length && req.query.artist && res.status(404).send(errorMessage.songs[0]);
   songByName.length === 1 && res.status(200).json(...songByName);
   songByName.length && res.status(200).json(songByName);
   req.query.name && res.status(404).send(errorMessage.songs[0]);
   
   songByArtist.length === 1 && res.status(200).json(...songByArtist);
   songByArtist.length && res.status(200).json(songByArtist);
-  req.query.name && res.status(404).send(errorMessage.artists[0]);  // se eu escrever o nome do artista errado numa query dupla, ele ignora que escrevi o nome errado. ver isso ae
+  req.query.artist && res.status(404).send(errorMessage.artists[0]);
 
   songs.length && res.status(200).json(songs);
   res.status(404).send(errorMessage.songs[1]);

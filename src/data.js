@@ -134,6 +134,7 @@ const songs = [
   { name: "Riders on the Storm", artist: "The Doors" },
   { name: "Rising", artist: "Dozer" },
   { name: "Layla", artist: "Eric Clapton" },
+  { name: "Tears in Heaven", artist: "Eric Clapton" },
   { name: "Welcome to the Jungle", artist: "Guns 'N Roses" },
   { name: "Sweet Child O' Mine", artist: "Guns 'N Roses" },
   { name: "Dr. Feelgood", artist: "Mötley Crüe" },
