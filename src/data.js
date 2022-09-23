@@ -132,7 +132,6 @@ const songs = [
   { name: "Highway Star", artist: "Deep Purple" },
   { name: "Hush", artist: "Deep Purple" },
   { name: "Riders on the Storm", artist: "The Doors" },
-  { name: "Rising", artist: "Dozer" },
   { name: "Layla", artist: "Eric Clapton" },
   { name: "Tears in Heaven", artist: "Eric Clapton" },
   { name: "Welcome to the Jungle", artist: "Guns 'N Roses" },

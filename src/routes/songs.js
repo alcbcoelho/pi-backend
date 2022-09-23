@@ -24,13 +24,18 @@ router.get("/", (req, res, next) => {
           element.artist?.toLowerCase() === req.query.artist?.toLowerCase()
       );
 
-      res.status(200).json(song);
+      song && res.status(200).json(song);
+      res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
     } else {
-      songByName.length && res.status(404).send(errorMessage.caption + errorMessage.artists[0]);
-      songByArtist.length && res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
+      songByName.length &&
+        res.status(404).send(errorMessage.caption + errorMessage.artists[0]);
+      songByArtist.length &&
+        res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
       res
         .status(404)
-        .send(`<b>ERRO:</b> ${errorMessage.artists[0]}<br><br>${errorMessage.songs[0]}`);
+        .send(
+          `<b>ERRO:</b> ${errorMessage.artists[0]}<br><br>${errorMessage.songs[0]}`
+        );
     }
   } else if (req.query.name) {
     if (songByName.length) {
@@ -49,9 +54,9 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/:id", (req, res, next) => {
-  const artist = songs.find(element => element.id === +req.params.id); //
+  const song = songs.find(element => element.id === +req.params.id); //
 
-  artist && res.status(200).json(artist);
+  song && res.status(200).json(song);
   res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
 });
 
@@ -63,7 +68,7 @@ router.post("/", (req, res, next) => {
 
   req.body.id = idGen;
   songs.push(req.body);
-  res.status(201).json(songs);
+  res.status(201).json(songs[songs.length - 1]);
 });
 
 // PUT (wip)
@@ -88,11 +93,13 @@ router.delete("/:id", (req, res, next) => {
   const index = songs.findIndex(element => element.id === +req.params.id);
 
   if (songs[index]) {
+    const songDetails = `${songs[index].artist} - ${songs[index].name} (ID ${songs[index].id})`;
+
     songs.splice(index, 1);
-    res.status(204).end();
-    // res.json(songs); // checagem
+    res.status(200).send(`<b><span style="color: #ff0000;">${songDetails}</span></b> removida com sucesso.`);
+    // res.status(204).end();
   }
-  res.status(404).send("ERRO: Playlist não encontrada.");
+  res.status(404).send(errorMessage.caption + errorMessage.songs[0]);
 });
 
 module.exports = router;

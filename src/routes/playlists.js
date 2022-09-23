@@ -28,7 +28,7 @@ router.post("/", (req, res, next) => {
 
   req.body.id = idGen;
   playlists.push(req.body);
-  res.status(201).json(playlists);
+  res.status(201).json(playlists[playlists.length - 1]);
 });
 
 // PUT
