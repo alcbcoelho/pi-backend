@@ -22,8 +22,7 @@ router.post("/", (req, res, next) => {
 
   while (playlists.findIndex(element => element.id === idGen) !== -1) idGen++;
 
-  req.body.id = idGen;
-  playlists.push(req.body);
+  playlists.push({ id: idGen, name: req.body.name, songs: req.body.songs });
   res.status(201).json(playlists[playlists.length - 1]);
 });
 
@@ -49,8 +48,15 @@ router.delete("/:id", (req, res, next) => {
   const index = playlists.findIndex(element => element.id === +req.params.id);
 
   if (playlists[index]) {
+    const playlistDetails = `${playlists[index].name} (ID #${playlists[index].id})`;
+
     playlists.splice(index, 1);
-    res.status(204).end();
+    res
+      .status(200)
+      .send(
+        `Playlist <b><span style="color: #ff0000;">${playlistDetails}</span></b> removida com sucesso.`
+      );
+    // res.status(204).end();
     // res.json(playlists); // checagem
   }
   res.status(404).send(error.caption + error.message.playlists[0]);

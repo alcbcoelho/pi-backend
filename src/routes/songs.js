@@ -54,7 +54,7 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/:id", (req, res, next) => {
-  const song = songs.find(element => element.id === +req.params.id); //
+  const song = songs.find(element => element.id === +req.params.id);
 
   song && res.status(200).json(song);
   res.status(404).send(error.caption + error.message.songs[0]);
@@ -66,8 +66,7 @@ router.post("/", (req, res, next) => {
 
   while (songs.findIndex(element => element.id === idGen) !== -1) idGen++;
 
-  req.body.id = idGen;
-  songs.push(req.body);
+  songs.push({ id: idGen, name: req.body.name, artist: req.body.artist });
   res.status(201).json(songs[songs.length - 1]);
 });
 
@@ -92,10 +91,14 @@ router.delete("/:id", (req, res, next) => {
   const index = songs.findIndex(element => element.id === +req.params.id);
 
   if (songs[index]) {
-    const songDetails = `${songs[index].artist} - ${songs[index].name} (ID ${songs[index].id})`;
+    const songDetails = `${songs[index].artist} - ${songs[index].name} (ID #${songs[index].id})`;
 
     songs.splice(index, 1);
-    res.status(200).send(`<b><span style="color: #ff0000;">${songDetails}</span></b> removida com sucesso.`);
+    res
+      .status(200)
+      .send(
+        `<b><span style="color: #ff0000;">${songDetails}</span></b> removida com sucesso.`
+      );
     // res.status(204).end();
   }
   res.status(404).send(error.caption + error.message.songs[0]);

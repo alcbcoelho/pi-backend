@@ -1,97 +1,9 @@
-const { users, error } = require("../data");
+const { User, users, error } = require("../data");
 
-const usuarios = [
-  {
-    id: 1,
-    username: "u1",
-    FirstName: "José",
-    lastName: "Fernando",
-    password: "123456",
-    phone: "98478-7786",
-    email: "josefernando@teste.com",
-  },
-  {
-    id: 2,
-    username: "u2",
-    FirstName: "Maria",
-    lastName: "Cristina",
-    password: "123456",
-    phone: "96778-7895",
-    email: "mariacristina@teste.com",
-  },
-  {
-    id: 3,
-    username: "u3",
-    FirstName: "Mario",
-    lastName: "José",
-    password: "123456",
-    phone: "98125-7741",
-    email: "mariojose@teste.com",
-  },
-  {
-    id: 4,
-    username: "u4",
-    FirstName: "Alice",
-    lastName: "Sousa",
-    password: "123456",
-    phone: "98591-2831",
-    email: "alice@teste.com",
-  },
-  {
-    id: 5,
-    username: "u5",
-    FirstName: "Leonardo",
-    lastName: "Pires",
-    password: "123456",
-    phone: "98255-6586",
-    email: "leonardopires@teste.com",
-  },
-  {
-    id: 6,
-    username: "u6",
-    FirstName: "Claudia",
-    lastName: "Freitas",
-    password: "123456",
-    phone: "98442-2233",
-    email: "claudiafreitaso@teste.com",
-  },
-  {
-    id: 7,
-    username: "u7",
-    FirstName: "Maria",
-    lastName: "Luiza",
-    password: "123456",
-    phone: "98258-3698",
-    email: "malu@teste.com",
-  },
-  {
-    id: 8,
-    username: "u8",
-    FirstName: "Eduardo",
-    lastName: "Rodrigues",
-    password: "123456",
-    phone: "94563-2597",
-    email: "eduardorodrigues@teste.com",
-  },
-  {
-    id: 9,
-    username: "u9",
-    FirstName: "Carolina",
-    lastName: "Freitas",
-    password: "123456",
-    phone: "91234-4321",
-    email: "carolinafreitas@teste.com",
-  },
-  {
-    id: 10,
-    username: "u10",
-    FirstName: "Beatriz",
-    lastName: "Soares",
-    password: "123456",
-    phone: "98010-2022",
-    email: "beatrizsoares@teste.com",
-  },
-];
+let idGen = 0;
+
+// set ids for each user
+users.length && users.forEach((element, index) => (element.id = index + 1));
 
 function showAll(req, res, next) {
   users.length && res.status(200).json(users);
@@ -99,48 +11,61 @@ function showAll(req, res, next) {
 }
 
 function show(req, res, next) {
-  const usuarioLocalizado = users.find(
-    usuario => usuario.id === Number(req.params.id)
-  );
-  if (!usuarioLocalizado) {
-    return res.status(404).json({ msg: "Usuário não localizado" });
-  }
-  res.json(usuarioLocalizado);
+  const user = users.find(element => element.id === +req.params.id);
+
+  user && res.status(200).json(user);
+  res.status(404).send(error.caption + error.message.users[0]);
 }
 
 function create(req, res, next) {
-  const novoUsuario = {
-    id: users.length + 1,
-    nome: req.body.nome,
-    phone: req.body.phone,
-    email: req.body.email,
-  };
-  users.push(novoUsuario);
-  res.status(201).json(novoUsuario);
+  idGen++;
+
+  while (users.findIndex(element => element.id === idGen) !== -1) idGen++;
+ 
+  users.push(new User(
+    idGen,
+    req.body.username,
+    req.body.password,
+    req.body.firstName,
+    req.body.lastName,
+    req.body.phone,
+    req.body.email
+  ));
+  res.status(201).json(users[users.length - 1]);
 }
 
 function update(req, res, next) {
-  const usuarioLocalizado = users.find(
-    usuario => usuario.id === Number(req.params.id)
-  );
-  if (!usuarioLocalizado) {
-    return res.status(404).json({ msg: "Usuário não localizado" });
-  }
-  usuarioLocalizado.nome = req.body.nome;
-  usuarioLocalizado.phone = req.body.phone;
-  usuarioLocalizado.email = req.body.email;
-  res.status(204).end();
+  let user = users.find(element => element.id === +req.params.id);
+
+  if (user) {
+    req.body.id = user.id;
+    user = req.body;
+    res.status(204).end();
+  } else res.status(404).send(error.caption + error.message.users[0]);
 }
 
 function remove(req, res, next) {
-  const posicaoUsuario = users.findIndex(
-    usuario => usuario.id === Number(req.params.id)
-  );
-  if (posicaoUsuario < 0) {
-    return res.status(404).json({ msg: "Usuário não localizado" });
+  const index = users.findIndex(element => element.id === +req.params.id);
+
+  if (users[index]) {
+    const userId = users[index].id;
+    users.splice(index, 1);
+    res
+      .status(200)
+      .send(
+        `Usuário de <b><span style="color: #ff0000;">ID #${userId}</span></b> removido com sucesso.`
+      );
+    // res.status(204).end();
   }
-  users.splice(posicaoUsuario, 1);
-  res.status(204).end();
+  res.status(404).send(error.caption + error.message.users[0]);
 }
 
 module.exports = { showAll, show, create, update, remove };
+
+/*
+
+TODO:
+
+- implementar unicidade do username/email (se tentar dar um POST com um nome de usuário já disponível, dar um erro);
+?- implementar 
+*/

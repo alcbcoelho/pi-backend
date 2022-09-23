@@ -1,3 +1,16 @@
+class User {
+  constructor(id, username, password, firstName, lastName, phone, email)
+  {
+    this.id = id;
+    this.username = username;
+    this.password = password;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.phone = phone;
+    this.email = email;
+  }
+}
+
 const songs = [
   { name: "Dancing Queen", artist: "ABBA" },
   { name: "Highway to Hell", artist: "AC/DC" },
@@ -106,7 +119,9 @@ const songs = [
 
 const playlists = [];
 
-const users = [];
+const users = [
+  new User(1, "u1", "123456", "José", "Fernando", "98478-7786", "josefernando@teste.com")
+];
 
 const error = {
   caption: '<b><span style="color: #ff0000;">ERRO:</span></b> ',
@@ -118,4 +133,99 @@ const error = {
   },
 };
 
-module.exports = { error, playlists, songs, users };
+module.exports = { User, error, playlists, songs, users };
+
+/* 
+const usuarios = [
+  {
+    id: 1,
+    username: "u1",
+    FirstName: "José",
+    lastName: "Fernando",
+    password: "123456",
+    phone: "98478-7786",
+    email: "josefernando@teste.com",
+  },
+  {
+    id: 2,
+    username: "u2",
+    FirstName: "Maria",
+    lastName: "Cristina",
+    password: "123456",
+    phone: "96778-7895",
+    email: "mariacristina@teste.com",
+  },
+  {
+    id: 3,
+    username: "u3",
+    FirstName: "Mario",
+    lastName: "José",
+    password: "123456",
+    phone: "98125-7741",
+    email: "mariojose@teste.com",
+  },
+  {
+    id: 4,
+    username: "u4",
+    FirstName: "Alice",
+    lastName: "Sousa",
+    password: "123456",
+    phone: "98591-2831",
+    email: "alice@teste.com",
+  },
+  {
+    id: 5,
+    username: "u5",
+    FirstName: "Leonardo",
+    lastName: "Pires",
+    password: "123456",
+    phone: "98255-6586",
+    email: "leonardopires@teste.com",
+  },
+  {
+    id: 6,
+    username: "u6",
+    FirstName: "Claudia",
+    lastName: "Freitas",
+    password: "123456",
+    phone: "98442-2233",
+    email: "claudiafreitaso@teste.com",
+  },
+  {
+    id: 7,
+    username: "u7",
+    FirstName: "Maria",
+    lastName: "Luiza",
+    password: "123456",
+    phone: "98258-3698",
+    email: "malu@teste.com",
+  },
+  {
+    id: 8,
+    username: "u8",
+    FirstName: "Eduardo",
+    lastName: "Rodrigues",
+    password: "123456",
+    phone: "94563-2597",
+    email: "eduardorodrigues@teste.com",
+  },
+  {
+    id: 9,
+    username: "u9",
+    FirstName: "Carolina",
+    lastName: "Freitas",
+    password: "123456",
+    phone: "91234-4321",
+    email: "carolinafreitas@teste.com",
+  },
+  {
+    id: 10,
+    username: "u10",
+    FirstName: "Beatriz",
+    lastName: "Soares",
+    password: "123456",
+    phone: "98010-2022",
+    email: "beatrizsoares@teste.com",
+  },
+];
+ */
