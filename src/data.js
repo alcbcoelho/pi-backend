@@ -1,122 +1,3 @@
-const artists = [
-  // 1
-  {
-    name: "AC/DC",
-    songs: ["Highway to Hell", "Thunderstruck", "Whole Lotta Rosie"],
-  },
-  // 2
-  {
-    name: "Aerosmith",
-    songs: ["Cryin'", "Dream On", "Walk This Way"],
-  },
-  // 3
-  {
-    name: "Alice In Chains",
-    songs: ["Man in the Box", "Real Thing", "Them Bones"],
-  },
-  // 4
-  {
-    name: "Billy Idol",
-    songs: ["Dancing with Myself", "Eyes Without a Face", "White Wedding"],
-  },
-  // 5
-  {
-    name: "Black Sabbath",
-    songs: ["Heaven and Hell", "Iron Man", "Laguna Sunrise", "War Pigs"],
-  },
-  // 6
-  {
-    name: "The Clash",
-    songs: ["London Calling", "Should I Stay or Should I Go", "White Riot"],
-  },
-  // 7
-  {
-    name: "Clutch",
-    songs: ["Burning Beard", "Earth Rocker", "Electric Worry"],
-  },
-  // 8
-  {
-    name: "Deep Purple",
-    songs: ["Child In Time", "Highway Star", "Perfect Strangers"],
-  },
-  // 9
-  {
-    name: "Disturbed",
-    songs: ["Down with the Sickness", "Indestructible", "Prayer"],
-  },
-  // 10
-  {
-    name: "Five Finger Death Punch",
-    songs: ["Bad Company", "Jekyll and Hyde", "Lift Me Up"],
-  },
-  // 11
-  {
-    name: "Guns N' Roses",
-    songs: [
-      "Knocking On Heaven's Door",
-      "November Rain",
-      "Welcome to the Jungle",
-    ],
-  },
-  // 12
-  {
-    name: "Iron Maiden",
-    songs: ["Fear of the Dark", "The Trooper", "Transylvania"],
-  },
-  // 13
-  {
-    name: "Led Zeppelin",
-    songs: ["Dazed and Confused", "Kashmir", "Stairway to Heaven"],
-  },
-  // 14
-  {
-    name: "Michael Jackson",
-    songs: ["Beat It", "Don't Stop 'Til You Get Enough", "Thriller"],
-  },
-  // 15
-  {
-    id: 1,
-    name: "Queen",
-    songs: ["Bohemian Rhapsody", "Radio Ga Ga", "Under Pressure"],
-  },
-  // 16
-  {
-    name: "Ramones",
-    songs: ["Blitzkrieg Bop", "I Wanna Be Sedated", "Pet Sematary"],
-  },
-  // 17
-  {
-    name: "Rush",
-    songs: ["The Spirit of Radio", "Tom Sawyer", "YYZ"],
-  },
-  // 18
-  {
-    name: "Sisters of Mercy",
-    songs: ["Dominion / Mother Russia", "More", "Temple of Love"],
-  },
-  // 19
-  {
-    name: "Tears for Fears",
-    songs: ["Head Over Heels", "Mad World", "Shout"],
-  },
-  // 20
-  {
-    name: "Type O Negative",
-    songs: ["Black No. 1", "Christian Woman", "Love You to Death"],
-  },
-  // 21
-  {
-    name: "Van Halen",
-    songs: ["Eruption", "Jump", "Panama"],
-  },
-  //////////////////////////////////////////
-  // 22
-  {
-    name: "Pearl Jam",
-    songs: ["Alive", "Black", "Even Flow"],
-  },
-];
-
 const songs = [
   { name: "Dancing Queen", artist: "ABBA" },
   { name: "Highway to Hell", artist: "AC/DC" },
@@ -223,46 +104,18 @@ const songs = [
   { name: "Sharp Dressed Man", artist: "ZZ Top" },
 ];
 
-const errorMessage = {
+const playlists = [];
+
+const users = [];
+
+const error = {
   caption: '<b><span style="color: #ff0000;">ERRO:</span></b> ',
-  artists: [
-    "Artista especificado não encontrado.",
-  ],
-  playlists: [
-    "Playlist não encontrada.",
-    "Não há playlists disponíveis.",
-  ],
-  songs: ["Música não encontrada.", "Não há músicas disponíveis."],
-  users: [
-    "Usuário não encontrado.",
-    "Não há usuários disponíveis.",
-  ],
+  message: {
+    artists: ["Artista especificado não encontrado."],
+    playlists: ["Playlist não encontrada.", "Não há playlists disponíveis."],
+    songs: ["Música não encontrada.", "Não há músicas disponíveis."],
+    users: ["Usuário não encontrado.", "Não há usuários disponíveis."],
+  },
 };
 
-// ^ pensando em tirar os "ERRO" daqui e colocá-los nos métodos send (routes/songs.js - l33 p/ o motivo)
-
-module.exports = { artists, songs, errorMessage };
-
-/*
-AC/DC
-Aerosmith
-Alice In Chains
-Billy Idol
-Black Sabbath
-The Clash
-Clutch
-Deep Purple
-Disturbed
-Five Finger Death Punch
-Guns N' Roses
-Iron Maiden
-Led Zeppelin
-Michael Jackson
-Queen
-Ramones
-Rush
-Sisters of Mercy
-Tears for Fears
-Type O Negative
-Van Halen
-*/
+module.exports = { error, playlists, songs, users };

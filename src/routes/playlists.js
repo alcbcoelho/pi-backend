@@ -1,23 +1,19 @@
 const express = require("express");
-const { errorMessage } = require("../data");
+const { error, playlists } = require("../data");
 const router = express.Router();
-
-const playlists = [
-  /* {id, name, songs[]} */
-];
 
 let idGen = 0;
 
 // GET
 router.get("/", (req, res, next) => {
   playlists.length && res.status(200).json(playlists);
-  res.status(404).send(errorMessage.caption + errorMessage.playlists[1]);
+  res.status(404).send(error.caption + error.message.playlists[1]);
 });
 router.get("/:id", (req, res, next) => {
   const playlist = playlists.find(element => element.id === +req.params.id);
 
   playlist && res.json(playlist);
-  res.status(404).send(errorMessage.caption + errorMessage.playlists[0]);
+  res.status(404).send(error.caption + error.message.playlists[0]);
 });
 
 // POST
@@ -57,7 +53,7 @@ router.delete("/:id", (req, res, next) => {
     res.status(204).end();
     // res.json(playlists); // checagem
   }
-  res.status(404).send(errorMessage.caption + errorMessage.playlists[0]);
+  res.status(404).send(error.caption + error.message.playlists[0]);
 });
 
 module.exports = router;

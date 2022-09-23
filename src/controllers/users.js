@@ -1,3 +1,5 @@
+const { users, error } = require("../data");
+
 const usuarios = [
   {
     id: 1,
@@ -87,16 +89,17 @@ const usuarios = [
     lastName: "Soares",
     password: "123456",
     phone: "98010-2022",
-    email: "Beatrizsoares@teste.com",
+    email: "beatrizsoares@teste.com",
   },
 ];
 
-function listar(req, res, next) {
-  res.status(200).json(usuarios);
+function showAll(req, res, next) {
+  users.length && res.status(200).json(users);
+  res.status(404).send(error.caption + error.message.users[1]);
 }
 
-function exibir(req, res, next) {
-  const usuarioLocalizado = usuarios.find(
+function show(req, res, next) {
+  const usuarioLocalizado = users.find(
     usuario => usuario.id === Number(req.params.id)
   );
   if (!usuarioLocalizado) {
@@ -105,19 +108,19 @@ function exibir(req, res, next) {
   res.json(usuarioLocalizado);
 }
 
-function criar(req, res, next) {
+function create(req, res, next) {
   const novoUsuario = {
-    id: usuarios.length + 1,
+    id: users.length + 1,
     nome: req.body.nome,
     phone: req.body.phone,
     email: req.body.email,
   };
-  usuarios.push(novoUsuario);
+  users.push(novoUsuario);
   res.status(201).json(novoUsuario);
 }
 
-function atualizar(req, res, next) {
-  const usuarioLocalizado = usuarios.find(
+function update(req, res, next) {
+  const usuarioLocalizado = users.find(
     usuario => usuario.id === Number(req.params.id)
   );
   if (!usuarioLocalizado) {
@@ -129,15 +132,15 @@ function atualizar(req, res, next) {
   res.status(204).end();
 }
 
-function remover(req, res, next) {
-  const posicaoUsuario = usuarios.findIndex(
+function remove(req, res, next) {
+  const posicaoUsuario = users.findIndex(
     usuario => usuario.id === Number(req.params.id)
   );
   if (posicaoUsuario < 0) {
     return res.status(404).json({ msg: "Usuário não localizado" });
   }
-  usuarios.splice(posicaoUsuario, 1);
+  users.splice(posicaoUsuario, 1);
   res.status(204).end();
 }
 
-module.exports = { listar, exibir, criar, atualizar, remover };
+module.exports = { showAll, show, create, update, remove };
