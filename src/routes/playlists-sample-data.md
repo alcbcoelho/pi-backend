@@ -2,12 +2,12 @@
 	"id": 0,
 	"name": "Rock Anos 70",
 	"songs": [
-		"/artists/13/songs/3",	// Led Zeppelin - Stairway to Heaven
-		"/artists/8/songs/2",	// Deep Purple - Highway Star
-		"/artists/2/songs/3",	// Aerosmith - Walk This Way
-		"/artists/15/songs/1",	// Queen - Bohemian Rhapsody
-		"/artists/5/songs/2",	// Black Sabbath - Iron Man
-		"/artists/1/songs/3"	// AC/DC - Whole Lotta Rosie
+		"",	// Led Zeppelin - Stairway to Heaven
+		"",	// Deep Purple - Highway Star
+		"",	// Aerosmith - Walk This Way
+		"",	// Queen - Bohemian Rhapsody
+		"",	// Black Sabbath - Iron Man
+		""	// AC/DC - Whole Lotta Rosie
 	]
 }
 
