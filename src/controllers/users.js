@@ -3,12 +3,16 @@ const { users, error } = require("../data");
 
 let idGen = 0;
 
-// set ids for each user
-users.length && users.forEach((element, index) => (element.id = index + 1));
-
 function showAll(req, res, next) {
-  users.length && res.status(200).json(users);
-  res.status(404).send(error.caption + error.message.users[1]);
+  if (req.query.username) {
+    const user = users.find(element => element.username === req.query.username);
+
+    if (user) res.status(200).json(user);
+    else res.status(404).send(error.caption + error.message.users[0]);
+  } else {
+    users.length && res.status(200).json(users);
+    res.status(404).send(error.caption + error.message.users[1]);
+  }
 }
 
 function show(req, res, next) {
@@ -22,25 +26,34 @@ function create(req, res, next) {
   idGen++;
 
   while (users.findIndex(element => element.id === idGen) !== -1) idGen++;
- 
-  users.push(new User(
-    idGen,
-    req.body.username,
-    req.body.password,
-    req.body.firstName,
-    req.body.lastName,
-    req.body.phone,
-    req.body.email
-  ));
+
+  users.push(
+    new User(
+      idGen,
+      req.body.username,
+      req.body.password,
+      req.body.firstName,
+      req.body.lastName,
+      req.body.phone,
+      req.body.email
+    )
+  );
   res.status(201).json(users[users.length - 1]);
 }
 
 function update(req, res, next) {
-  let user = users.find(element => element.id === +req.params.id);
+  let index = users.findIndex(element => element.id === +req.params.id);
 
-  if (user) {
-    req.body.id = user.id;
-    user = req.body;
+  if (users[index]) {
+    users[index] = new User(
+      +req.params.id,
+      req.body.username,
+      req.body.password,
+      req.body.firstName,
+      req.body.lastName,
+      req.body.phone,
+      req.body.email
+    );
     res.status(204).end();
   } else res.status(404).send(error.caption + error.message.users[0]);
 }
