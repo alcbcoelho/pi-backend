@@ -1,15 +1,4 @@
-class User {
-  constructor(id, username, password, firstName, lastName, phone, email)
-  {
-    this.id = id;
-    this.username = username;
-    this.password = password;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.phone = phone;
-    this.email = email;
-  }
-}
+const { User } = require("./classes/User"); 
 
 const songs = [
   { name: "Dancing Queen", artist: "ABBA" },
@@ -22,31 +11,34 @@ const songs = [
   { name: "Livin' On A Prayer", artist: "Bon Jovi" },
   { name: "You Give Love a Bad Name", artist: "Bon Jovi" },
   { name: "Holding Out for a Hero", artist: "Bonnie Tyler" },
-  { name: "Breadfan", artist: "Budgie" },
+  { name: "Rise Above", artist: "Black Flag" },
   { name: "Heaven and Hell", artist: "Black Sabbath" },
   { name: "Iron Man", artist: "Black Sabbath" },
-  { name: "Sabbra Cadabra", artist: "Black Sabbath" },
+  { name: "Symptom of the Universe", artist: "Black Sabbath" },
+  { name: "Machinehead", artist: "Bush" },
   { name: "London Calling", artist: "The Clash" },
   { name: "Should I Stay or Should I Go", artist: "The Clash" },
   { name: "White Riot", artist: "The Clash" },
   { name: "Burning Beard", artist: "Clutch" },
   { name: "Power Player", artist: "Clutch" },
+  { name: "New Rose", artist: "The Damned" },
   { name: "Holiday In Cambodia", artist: "Dead Kennedys" },
+  { name: "Kill the Poor", artist: "Dead Kennedys" },
   { name: "You Spin Me Round (Like a Record)", artist: "Dead or Alive" },
   { name: "Layla", artist: "Derek & the Dominos" },
   { name: "Highway Star", artist: "Deep Purple" },
-  { name: "Hush", artist: "Deep Purple" },
+  { name: "Perfect Strangers", artist: "Deep Purple" },
+  { name: "Am I Evil?", artist: "Diamond Head" },
   { name: "Money For Nothing", artist: "Dire Straits" },
   { name: "Sultans of Swing", artist: "Dire Straits" },
   { name: "Riders on the Storm", artist: "The Doors" },
   { name: "Layla", artist: "Eric Clapton" },
-  { name: "Tears in Heaven", artist: "Eric Clapton" },
   { name: "Epic", artist: "Faith No More" },
   { name: "Welcome to the Jungle", artist: "Guns 'N Roses" },
   { name: "Sweet Child O' Mine", artist: "Guns 'N Roses" },
-  { name: "What Is Love", artist: "Haddaway" }, // Queen - We Are the Champions ? Europe - The Final Countdown
   { name: "The Trooper", artist: "Iron Maiden" },
   { name: "Wasted Years", artist: "Iron Maiden" },
+  { name: "Aqualung", artist: "Jethro Tull" },
   { name: "Hey Joe", artist: "Jimi Hendrix" },
   { name: "Hungarian Dance No. 5", artist: "Johannes Brahms" },
   {
@@ -55,7 +47,7 @@ const songs = [
   },
   { name: "Don't Stop Believin'", artist: "Journey" },
   { name: "Electric Eye", artist: "Judas Priest" },
-  { name: "Victim of Changes", artist: "Judas Priest" },
+  { name: "Painkiller", artist: "Judas Priest" },
   { name: "21st Century Schizoid Man", artist: "King Crimson" },
   { name: "Starless", artist: "King Crimson" },
   { name: "Gardenia", artist: "Kyuss" },
@@ -64,51 +56,48 @@ const songs = [
   { name: "Free Bird", artist: "Lynyrd Skynyrd" },
   { name: "Piano Sonata No. 14", artist: "Ludwig van Beethoven" },
   { name: "Symphony No. 5", artist: "Ludwig van Beethoven" },
-  { name: "Holy Wars... the Punishment Due", artist: "Megadeth" },
   { name: "Peace Sells", artist: "Megadeth" },
+  { name: "Tornado of Souls", artist: "Megadeth" },
   { name: "Enter Sandman", artist: "Metallica" },
   { name: "Master of Puppets", artist: "Metallica" },
   { name: "Beat It", artist: "Michael Jackson" },
-  { name: "Don't Stop 'Til You Get Enough", artist: "Michael Jackson" },  //
   { name: "Thriller", artist: "Michael Jackson" },
   { name: "Negasonic Teenage Warhead", artist: "Monster Magnet" },
   { name: "Powertrip", artist: "Monster Magnet" },
   { name: "Dr. Feelgood", artist: "Mötley Crüe" },
   { name: "Ace of Spades", artist: "Motörhead" },
   { name: "Smells Like Teen Spirit", artist: "Nirvana" },
+  { name: "Crazy Train", artist: "Ozzy Osbourne" },
   { name: "Cowboys from Hell", artist: "Pantera" },
   { name: "Even Flow", artist: "Pearl Jam" },
-  { name: "Jeremy", artist: "Pearl Jam" },
+  { name: "Jeremy", artist: "Pearl Jam" }, //
   { name: "Time", artist: "Pink Floyd" },
   { name: "1892 Overture", artist: "Pyotr Tchaikovsky" },
   { name: "Bohemian Rhapsody", artist: "Queen" },
   { name: "Radio Ga Ga", artist: "Queen" },
   { name: "I Wanna Be Sedated", artist: "Ramones" },
-  { name: "Poison Heart", artist: "Ramones" },  //
   { name: "Ride of the Valkyries", artist: "Richard Wagner" },
   { name: "Never Gonna Give You Up", artist: "Rick Astley" },
   { name: "The Spirit of Radio", artist: "Rush" },
   { name: "Subdivisions", artist: "Rush" },
-  { name: "YYZ", artist: "Rush" },
+  { name: "Rock You Like A Hurricane", artist: "Scorpions" },
   { name: "Anarchy In The UK", artist: "Sex Pistols" },
   { name: "God Save The Queen", artist: "Sex Pistols" },
-  { name: "More", artist: "Sisters of Mercy" }, //
   { name: "Temple of Love", artist: "Sisters of Mercy" },
   { name: "Bullet with Butterfly Wings", artist: "Smashing Pumpkins" },
-  { name: "Born To Be Wild", artist: "Steppenwolf" },
+  { name: "Left Brain Ambassadors", artist: "Spiritual Beggars" },
   { name: "Interstate Love Song", artist: "Stone Temple Pilots" },
   { name: "Institutionalized", artist: "Suicidal Tendencies" },
-  { name: "Hide In Your Shell", artist: "Supertramp" },
+  { name: "Fool's Overture", artist: "Supertramp" },
   { name: "Eye of the Tiger", artist: "Survivor" },
-  { name: "Heads Over Heels", artist: "Tears for Fears" },
+  { name: "Head Over Heels", artist: "Tears for Fears" },
   { name: "Shout", artist: "Tears for Fears" },
   { name: "Jailbreak", artist: "Thin Lizzy" },
   { name: "The Boys Are Back In Town", artist: "Thin Lizzy" },
   { name: "Black No. 1", artist: "Type O Negative" },
   { name: "Love You to Death", artist: "Type O Negative" },
-  { name: "Rock Bottom", artist: "UFO" },
   { name: "Salisbury", artist: "Uriah Heep" },
-  { name: "Eruption", artist: "Van Halen" },  // Van Halen - Jump ? Scorpions - Rock You Like a Hurricane
+  { name: "Jump", artist: "Van Halen" },
   { name: "Panama", artist: "Van Halen" },
   { name: "Joker And The Thief", artist: "Wolfmother" },
   { name: "New Moon Rising", artist: "Wolfmother" },
@@ -117,10 +106,260 @@ const songs = [
   { name: "Sharp Dressed Man", artist: "ZZ Top" },
 ];
 
-const playlists = [];
+const playlists = [
+  {
+    id: 1,
+    name: "Rock Anos 70",
+    author: "/users/1",
+    songs: [
+      "/songs/49",  // Led Zeppelin - Stairway to Heaven
+      "/songs/99",  // ZZ Top - La Grange
+      "/songs/26",  // Deep Purple - Highway Star
+      "/songs/39",  // Jimi Hendrix - Hey Joe
+      "/songs/13",  // Black Sabbath - Iron Man
+      "/songs/89",  // Thin Lizzy - Jailbreak
+      "/songs/31",  // The Doors - Riders on the Storm
+      "/songs/2",   // AC/DC - Highway to Hell
+      "/songs/25",  // Derek and the Dominos - Layla
+      "/songs/70",  // Queen - Bohemian Rhapsody
+      "/songs/30",  // Dire Straits - Sultans of Swing
+      "/songs/50"  // Lynyrd Skynyrd - Free Bird
+    ],
+  },
+  {
+    id: 2,
+    name: "Rock Anos 80",
+    author: "/users/2",
+    songs: [
+      "/songs/75",  // Rush - The Spirit of Radio
+      "/songs/29",  // Dire Straits - Money for Nothing
+      "/songs/61",  // Mötley Crue - Dr. Feelgood
+      "/songs/27",  // Deep Purple - Perfect Strangers
+      "/songs/95",  // Van Halen - Panama
+      "/songs/34",  // Guns 'N Roses - Welcome to the Jungle
+      "/songs/100",  // ZZ Top - Sharp Dressed Man
+      "/songs/9",  // Bon Jovi - You Give Love a Bad Name
+      "/songs/77",  // Scorpions - Rock You Like A Hurricane
+      "/songs/35"  // Guns 'N Roses - Sweet Child O' Mine
+    ],
+  },
+  {
+    id: 3,
+    name: "Rock Anos 90 e Grunge",
+    author: "/users/3",
+    songs: [
+      "/songs/63",  // Nirvana - Smells Like Teen Spirit
+      "/songs/91",  // Type O Negative - Black No. 1
+      "/songs/15",  // Bush - Machinehead
+      "/songs/66",  // Pearl Jam - Even Flow
+      "/songs/5",  // Alice in Chains - Them Bones
+      "/songs/83",  // Stone Temple Pilots - Interstate Love Song
+      "/songs/92",  // Type O Negative - Love You to Death
+      "/songs/81",  // Smashing Pumpkins - Bullet with Butterfly Wings
+      "/songs/4",  // Alice in Chains - Man in the Box
+      "/songs/33"  // Faith No More - Epic
+    ],
+  },
+  {
+    id: 4,
+    name: "Metal",
+    author: "/users/4",
+    songs: [
+      "/songs/43",  // Judas Priest - Electric Eye
+      "/songs/12",  // Black Sabbath - Heaven and Hell
+      "/songs/3",  // AC/DC - Thunderstruck
+      "/songs/64",  // Ozzy Osbourne - Crazy Train
+      "/songs/62",  // Motörhead - Ace of Spades
+      "/songs/48",  // Kyuss - Green Machine
+      "/songs/36",  // Iron Maiden - The Trooper
+      "/songs/28",  // Diamond Head - Am I Evil?
+      "/songs/54",  // Megadeth - Tornado of Souls
+      "/songs/55",  // Metallica - Enter Sandman
+      "/songs/14",  // Black Sabbath - Symptom of the Universe
+      "/songs/44",  // Judas Priest - Painkiller
+      "/songs/65",  // Pantera - Cowboys from Hell
+      "/songs/56",  // Metallica - Master of Puppets
+      "/songs/53"  // Megadeth - Peace Sells
+    ],
+  },
+  {
+    id: 5,
+    name: "Clássica",
+    author: "/users/5",
+    songs: [
+      "/songs/41",  // Johann Sebastian Bach - Toccata and Fugue in D minor, BWV 565
+      "/songs/51",  // Ludwing van Beethoven - Piano Sonata No. 14
+      "/songs/69",  // 1892 Overture
+      "/songs/40",  // Johann Brahms - Hungarian Dance No. 5
+      "/songs/73",  // Richard Wagner - Ride of the Valkyries
+      "/songs/52"  // Ludwing van Beethoven - Symphony No. 5
+    ],
+  },
+  {
+    id: 6,
+    name: "Rock Progressivo",
+    author: "/users/6",
+    songs: [
+      "/songs/98",  // Yes - Roundabout
+      "/songs/45",  // King Crimson - 21st Century Schizoid Man
+      "/songs/76",  // Rush - Subdivisions
+      "/songs/85",  // Supertramp - Fool's Overture
+      "/songs/38",  // Jethro Tull - Aqualung
+      "/songs/68",  // Pink Floyd - Time
+      "/songs/93",  // Uriah Heep - Salisbury
+      "/songs/46"  // King Crimson - Starless
+    ],
+  },
+  {
+    id: 7,
+    name: "Punk Rock",
+    author: "/users/7",
+    songs: [
+      "/songs/72",  // Ramones - I Wanna Be Sedated
+      "/songs/21",  // The Damned - New Rose
+      "/songs/78",  // Sex Pistols - Anarchy in the UK
+      "/songs/16",  // The Clash - London Calling
+      "/songs/23",  // Dead Kennedys - Kill the Poor
+      "/songs/11",  // Black Flag - Rise Above
+      "/songs/79",  // Sex Pistols - God Save The Queen
+      "/songs/84",  // Suicidal Tendencies - Institutionalized
+      "/songs/18",  // The Clash - White Riot
+      "/songs/22"  // Dead Kennedys - Holiday In Cambodia
+    ],
+  },
+  {
+    id: 8,
+    name: "Stoner Rock",
+    author: "/users/8",
+    songs: [
+      "/songs/82",  // Spiritual Beggars - Left Brain Ambassadors
+      "/songs/20",  // Clutch - Power Player
+      "/songs/47",  // Kyuss - Gardenia
+      "/songs/97",  // Wolfmother - New Moon Rising
+      "/songs/60",  // Monster Magnet - Powertrip
+      "/songs/19",  // Clutch - Burning Beard
+      "/songs/96",  // Wolfmother - Joker and the Thief
+      "/songs/48",  // Kyuss - Green Machine
+      "/songs/59"  // Monster Magnet - Negasonic Teenage Warhead
+    ],
+  },
+  {
+    id: 9,
+    name: "Hits Anos 80",
+    author: "/users/9",
+    songs: [
+      "/songs/71",  // Queen - Radio Ga Ga
+      "/songs/1",  // ABBA - Dancing Queen
+      "/songs/88",  // Tears for Fears - Shout
+      "/songs/58",  // Michael Jackson - Thriller
+      "/songs/80",  // Sisters of Mercy - Temple of Love
+      "/songs/6",  // Billy Idol - Dancing with Myself
+      "/songs/74",  // Rick Astley - Never Gonna Give You Up
+      "/songs/86",  // Survivor - Eye of the Tiger
+      "/songs/94",  // Van Halen - Jump
+      "/songs/57",  // Michael Jackson - Beat It
+      "/songs/42",  // Journey - Don't Stop Believin'
+      "/songs/10",  // Bonnie Tyler - Holding Out for a Hero
+      "/songs/17",  // The Clash - Should I Stay or Should I Go
+      "/songs/35",  // Guns 'N Roses - Sweet Child O' Mine
+      "/songs/87",  // Tears for Fears - Head Over Heels
+      "/songs/8",  // Bon Jovi - Livin' On A Prayer
+      "/songs/24"  // Dead or Alive - You Spin Me Round (Like a Record)
+    ],
+  },
+];
 
 const users = [
-  new User(1, "u1", "123456", "José", "Fernando", "98478-7786", "josefernando@teste.com")
+  new User(
+    1,
+    "usuario_1",
+    "123456",
+    "José",
+    "Fernando",
+    "98478-7786",
+    "josefernando@teste.com"
+  ),
+  new User(
+    2,
+    "usuario_2",
+    "123456",
+    "Maria",
+    "Cristina",
+    "96778-7895",
+    "mariacristina@teste.com"
+  ),
+  new User(
+    3,
+    "usuario_3",
+    "123456",
+    "Mario",
+    "José",
+    "98125-7741",
+    "mariojose@teste.com"
+  ),
+  new User(
+    4,
+    "usuario_4",
+    "123456",
+    "Alice",
+    "Sousa",
+    "98591-2831",
+    "alice@teste.com"
+  ),
+  new User(
+    5,
+    "usuario_5",
+    "123456",
+    "Leonardo",
+    "Pires",
+    "98255-6586",
+    "leonardopires@teste.com"
+  ),
+  new User(
+    6,
+    "usuario_6",
+    "123456",
+    "Claudia",
+    "Freitas",
+    "98442-2233",
+    "claudiafreitaso@teste.com"
+  ),
+  new User(
+    7,
+    "usuario_7",
+    "123456",
+    "Maria",
+    "Luiza",
+    "98258-3698",
+    "malu@teste.com"
+  ),
+  new User(
+    8,
+    "usuario_8",
+    "123456",
+    "Eduardo",
+    "Rodrigues",
+    "94563-2597",
+    "eduardorodrigues@teste.com"
+  ),
+  new User(
+    9,
+    "usuario_9",
+    "123456",
+    "Carolina",
+    "Freitas",
+    "91234-4321",
+    "carolinafreitas@teste.com"
+  ),
+  new User(
+    10,
+    "usuario_10",
+    "123456",
+    "Beatriz",
+    "Soares",
+    "98010-2022",
+    "beatrizsoares@teste.com"
+  ),
 ];
 
 const error = {
@@ -133,99 +372,4 @@ const error = {
   },
 };
 
-module.exports = { User, error, playlists, songs, users };
-
-/* 
-const usuarios = [
-  {
-    id: 1,
-    username: "u1",
-    FirstName: "José",
-    lastName: "Fernando",
-    password: "123456",
-    phone: "98478-7786",
-    email: "josefernando@teste.com",
-  },
-  {
-    id: 2,
-    username: "u2",
-    FirstName: "Maria",
-    lastName: "Cristina",
-    password: "123456",
-    phone: "96778-7895",
-    email: "mariacristina@teste.com",
-  },
-  {
-    id: 3,
-    username: "u3",
-    FirstName: "Mario",
-    lastName: "José",
-    password: "123456",
-    phone: "98125-7741",
-    email: "mariojose@teste.com",
-  },
-  {
-    id: 4,
-    username: "u4",
-    FirstName: "Alice",
-    lastName: "Sousa",
-    password: "123456",
-    phone: "98591-2831",
-    email: "alice@teste.com",
-  },
-  {
-    id: 5,
-    username: "u5",
-    FirstName: "Leonardo",
-    lastName: "Pires",
-    password: "123456",
-    phone: "98255-6586",
-    email: "leonardopires@teste.com",
-  },
-  {
-    id: 6,
-    username: "u6",
-    FirstName: "Claudia",
-    lastName: "Freitas",
-    password: "123456",
-    phone: "98442-2233",
-    email: "claudiafreitaso@teste.com",
-  },
-  {
-    id: 7,
-    username: "u7",
-    FirstName: "Maria",
-    lastName: "Luiza",
-    password: "123456",
-    phone: "98258-3698",
-    email: "malu@teste.com",
-  },
-  {
-    id: 8,
-    username: "u8",
-    FirstName: "Eduardo",
-    lastName: "Rodrigues",
-    password: "123456",
-    phone: "94563-2597",
-    email: "eduardorodrigues@teste.com",
-  },
-  {
-    id: 9,
-    username: "u9",
-    FirstName: "Carolina",
-    lastName: "Freitas",
-    password: "123456",
-    phone: "91234-4321",
-    email: "carolinafreitas@teste.com",
-  },
-  {
-    id: 10,
-    username: "u10",
-    FirstName: "Beatriz",
-    lastName: "Soares",
-    password: "123456",
-    phone: "98010-2022",
-    email: "beatrizsoares@teste.com",
-  },
-];
- */
+module.exports = { error, playlists, songs, users };

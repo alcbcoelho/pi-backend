@@ -81,7 +81,7 @@ router.put("/:id", (req, res, next) => {
   } else {
     // agir como método POST
     req.body.id = +req.params.id;
-    songs.push(req.body);
+    songs.push({ id: idGen, name: req.body.name, artist: req.body.artist });
     res.status(201).json(songs);
   }
 });

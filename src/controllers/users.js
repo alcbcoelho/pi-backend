@@ -1,4 +1,5 @@
-const { User, users, error } = require("../data");
+const { User } = require("../classes/User");
+const { users, error } = require("../data");
 
 let idGen = 0;
 

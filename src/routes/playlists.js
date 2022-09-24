@@ -22,7 +22,7 @@ router.post("/", (req, res, next) => {
 
   while (playlists.findIndex(element => element.id === idGen) !== -1) idGen++;
 
-  playlists.push({ id: idGen, name: req.body.name, songs: req.body.songs });
+  playlists.push({ id: idGen, name: req.body.name, author: req.body.author, songs: req.body.songs });
   res.status(201).json(playlists[playlists.length - 1]);
 });
 
@@ -38,7 +38,7 @@ router.put("/:id", (req, res, next) => {
   } else {
     // agir como método POST
     req.body.id = +req.params.id;
-    playlists.push(req.body);
+    playlists.push({ id: idGen, name: req.body.name, author: req.body.author, songs: req.body.songs });
     res.status(201).json(playlists);
   }
 });
