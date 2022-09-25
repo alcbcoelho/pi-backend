@@ -25,7 +25,7 @@ const songs = [
   { id: undefined, name: "Holiday In Cambodia", artist: "Dead Kennedys" },
   { id: undefined, name: "Kill the Poor", artist: "Dead Kennedys" },
   { id: undefined, name: "You Spin Me Round (Like a Record)", artist: "Dead or Alive" },
-  { id: undefined, name: "Layla", artist: "Derek & the Dominos" },
+  { id: undefined, name: "Layla", artist: "Derek and the Dominos" },
   { id: undefined, name: "Highway Star", artist: "Deep Purple" },
   { id: undefined, name: "Perfect Strangers", artist: "Deep Purple" },
   { id: undefined, name: "Am I Evil?", artist: "Diamond Head" },
@@ -369,6 +369,7 @@ const error = {
     artists: ["Artista especificado não encontrado."],
     playlists: ["Playlist não encontrada.", "Não há playlists disponíveis."],
     songs: ["Música não encontrada.", "Não há músicas disponíveis."],
+    username: ["Já há um usuário registrado com o nome de usuário especificado."],
     users: ["Usuário não encontrado.", "Não há usuários disponíveis."],
   },
 };

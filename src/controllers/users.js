@@ -23,39 +23,53 @@ function show(req, res, next) {
 }
 
 function create(req, res, next) {
-  idGen++;
+  try {
+    if (users.find(element => element.username === req.body.username))
+      throw error.caption + error.message.username[0];
 
-  while (users.findIndex(element => element.id === idGen) !== -1) idGen++;
+    idGen++;
 
-  users.push(
-    new User(
-      idGen,
-      req.body.username,
-      req.body.password,
-      req.body.firstName,
-      req.body.lastName,
-      req.body.phone,
-      req.body.email
-    )
-  );
-  res.status(201).json(users[users.length - 1]);
+    while (users.findIndex(element => element.id === idGen) !== -1) idGen++;
+
+    users.push(
+      new User(
+        idGen,
+        req.body.username,
+        req.body.password,
+        req.body.firstName,
+        req.body.lastName,
+        req.body.phone,
+        req.body.email
+      )
+    );
+    res.status(201).json(users[users.length - 1]);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 }
 
 function update(req, res, next) {
-  let index = users.findIndex(element => element.id === +req.params.id);
+  try {
+    if (users.find(element => element.username === req.body.username))
+      throw error.caption + error.message.username[0];
+      
+    let index = users.findIndex(element => element.id === +req.params.id);
 
-  if (users[index]) {
-    users[index] = new User(
-      +req.params.id,
-      req.body.username,
-      req.body.password,
-      req.body.firstName,
-      req.body.lastName,
-      req.body.phone,
-      req.body.email
-    );
-    res.status(204).end();
-  } else res.status(404).send(error.caption + error.message.users[0]);
+    if (users[index]) {
+      users[index] = new User(
+        +req.params.id,
+        req.body.username,
+        req.body.password,
+        req.body.firstName,
+        req.body.lastName,
+        req.body.phone,
+        req.body.email
+      );
+      res.status(204).end();
+    } else res.status(404).send(error.caption + error.message.users[0]);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 }
 
 function remove(req, res, next) {
