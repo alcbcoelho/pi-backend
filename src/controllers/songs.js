@@ -10,7 +10,7 @@ function showAllOrFilter(req, res, next) {
     element => element.name?.toLowerCase() === req.query.name?.toLowerCase()
   );
   const songByArtist = songs.filter(
-    element => element.artist?.toLowerCase() === req.query.artist?.toLowerCase()
+    element => element.artist?.toLowerCase().parseSpecialCharacters() === req.query.artist?.toLowerCase()
   );
 
   if (req.query.name && req.query.artist) {

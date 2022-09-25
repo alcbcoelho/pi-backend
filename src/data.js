@@ -369,6 +369,7 @@ const error = {
     artists: ["Artista especificado não encontrado."],
     playlists: ["Playlist não encontrada.", "Não há playlists disponíveis."],
     songs: ["Música não encontrada.", "Não há músicas disponíveis."],
+    username: ["Já há um usuário registrado com o nome de usuário especificado."],
     users: ["Usuário não encontrado.", "Não há usuários disponíveis."],
   },
 };
