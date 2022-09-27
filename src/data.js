@@ -367,8 +367,8 @@ const error = {
   caption: '<b><span style="color: #ff0000;">ERRO:</span></b> ',
   message: {
     artists: ["Artista especificado não encontrado."],
-    playlists: ["Playlist não encontrada.", "Não há playlists disponíveis."],
-    songs: ["Música não encontrada.", "Não há músicas disponíveis."],
+    playlists: ["Playlist não encontrada.", "Não há playlists disponíveis.", "Atributos insuficientes para se criar uma nova playlist."],
+    songs: ["Música não encontrada.", "Não há músicas disponíveis.", "Atributos insuficientes para se criar uma nova música."],
     username: ["Já há um usuário registrado com o nome de usuário especificado."],
     users: ["Usuário não encontrado.", "Não há usuários disponíveis."],
   },
