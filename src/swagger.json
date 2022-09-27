@@ -1,0 +1,578 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Playlistenin': crie playlists com suas músicas favoritas 🎶",
+    "description": "API REST com dados de músicas, playlists e usuários para um aplicativo fictício de criação de playlists.",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": {
+    "name": "users",
+    "description": "Dados e operações envolvendo usuários.",
+    "name": "users",
+    "description": "Dados e operações envolvendo usuários.",
+    "name": "users",
+    "description": "Dados e operações envolvendo usuários."
+  },
+  "paths": {
+    "/songs": {
+      "get": {
+        "tags": ["Songs"],
+        "summary": "Visualizar lista de músicas",
+        "description": "Retorna um array de objetos com atributos de cada música disponível. Caso os parâmetros de consulta (query params) sejam especificados, a(s) música(s) retornada(s) é(são) filtrada(s) de acordo com cada parâmetro.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Nome da música pelo qual se deseja filtrar resultados",
+            "required": false
+          },
+          {
+            "name": "artist",
+            "in": "query",
+            "description": "Nome do artista pelo qual se deseja filtrar resultados",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Users"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Indisponibilidade de músicas cadastradas"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Songs"],
+        "summary": "Inserir nova música",
+        "description": "Insere uma nova música ao array de músicas disponíveis.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Songs"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Música inserida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Songs"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Atributos insuficientes"
+          }
+        }
+      }
+    },
+    "/songs/{id}": {
+      "get": {
+        "tags": ["Songs"],
+        "summary": "Visualizar música por ID",
+        "description": "Retorna um objeto com atributos da música de ID correspondente ao parâmetro inserido na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da música",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Música encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Songs"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Música não encontrada"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Songs"],
+        "summary": "Atualizar música",
+        "description": "Atualiza atributos de música de ID correspondente ao parâmetro especificado na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da música",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Songs"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Atributo(s) atualizado(s)"
+          },
+          "404": {
+            "description": "Música não encontrada"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Songs"],
+        "summary": "Remover música",
+        "description": "Remove do array de músicas a música de ID correspondente ao parâmetro especificado na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da música",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Música removida",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<b><span style='color: #ff0000;'>ABBA - Dancing Queen (ID #1)</span></b> removida com sucesso."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Música não encontrada"
+          }
+        }
+      }
+    },
+    "/playlists": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Visualizar lista de playlists",
+        "description": "Retorna um array de objetos com atributos de cada playlist disponível.",
+        "responses": {
+          "200": {
+            "description": "Playlist encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Playlists"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Indisponibilidade de playlists cadastradas"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Playlists"],
+        "summary": "Criar nova playlist",
+        "description": "Insere uma nova playlist ao array de playlists disponíveis.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Playlists"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Playlist inserida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Playlists"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Atributos insuficientes"
+          }
+        }
+      }
+    },
+    "/playlists/{id}": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Visualizar playlist por ID",
+        "description": "Retorna um objeto com atributos da playlist de ID correspondente ao parâmetro inserido na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da playlist",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Playlist encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/Playlists"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Playlist não encontrada"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Playlists"],
+        "summary": "Atualizar playlist",
+        "description": "Atualiza atributos da playlist de ID correspondente ao parâmetro especificado na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da playlist",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Playlists"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Atributo(s) atualizado(s)"
+          },
+          "404": {
+            "description": "Playlist não encontrada"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Playlists"],
+        "summary": "Remover playlist",
+        "description": "Remove do array de playlists a playlist de ID correspondente ao parâmetro especificado na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da playlist",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Playlist removida",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "Playlist <b><span style='color: #ff0000;'>Rock Anos 70 (ID #1)</span></b> removida com sucesso."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Playlist não encontrada"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Visualizar lista de usuários",
+        "description": "Retorna um array de objetos com atributos de cada usuário cadastrado. Caso especificado um nome de usuário como parâmetro de consulta (query param), é retornado o objeto associado a este usuário.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "Nome do usuário que se deseja visualizar",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários cadastrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Users"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Indisponibilidade de usuários cadastrados"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Cadastrar novo usuário",
+        "description": "Insere um novo usuário ao array de usuários cadastrados.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Users"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário inserido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Users"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nome de usuário já em uso"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Visualizar usuário por ID",
+        "description": "Retorna um objeto com atributos do usuário de ID correspondente ao parâmetro inserido na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/Users"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Atualizar usuário",
+        "description": "Atualiza atributos do usuário de ID correspondente ao parâmetro especificado na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Users"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Atributo(s) atualizado(s)"
+          },
+          "400": {
+            "description": "Nome de usuário já em uso"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Remover usuário",
+        "description": "Remove do array de usuários cadastrados o usuário de ID correspondente ao parâmetro especificado na URL",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do usuário",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário removido",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "Usuário de <b><span style='color: #ff0000;'>ID #77</span></b> removido com sucesso."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Songs": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Dancing Queen"
+          },
+          "artist": {
+            "type": "string",
+            "example": "ABBA"
+          }
+        }
+      },
+      "Playlists": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Rock Anos 70"
+          },
+          "author": {
+            "type": "string",
+            "example": "/users/1"
+          },
+          "songs": {
+            "type": "string[]",
+            "example": [
+              "/songs/49",
+              "/songs/99",
+              "/songs/26",
+              "/songs/39",
+              "/songs/13",
+              "/songs/89",
+              "/songs/31",
+              "/songs/2",
+              "/songs/25",
+              "/songs/70",
+              "/songs/30",
+              "/songs/50"
+            ]
+          }
+        }
+      },
+      "Users": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 77
+          },
+          "username": {
+            "type": "string",
+            "example": "ShadowWarrior777"
+          },
+          "password": {
+            "type": "string",
+            "example": "baleiasazuis123"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Fulano"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "de Tal"
+          },
+          "phone": {
+            "type": "string",
+            "example": "99237-1991"
+          },
+          "email": {
+            "type": "string",
+            "example": "fulanodetal@teste.com"
+          }
+        }
+      }
+    }
+  }
+}
