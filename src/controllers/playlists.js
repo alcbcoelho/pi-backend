@@ -30,7 +30,7 @@ function create(req, res, next) {
 
   if (Object.values(newPlaylist).some(element => !element)) {
     idGen = idGenInit;
-    res.status(400).send(error.caption + error.message.songs[2]);
+    res.status(400).send(error.caption + error.message.alertOnMissingAttributes("playlist"));
   } else {
     playlists.push(newPlaylist);
     res.status(201).json(newPlaylist);

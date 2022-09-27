@@ -59,18 +59,17 @@ function show(req, res, next) {
 
 function create(req, res, next) {
   const idGenInit = idGen;
-  
+
   idGen++;
 
   while (songs.findIndex(element => element.id === idGen) !== -1) idGen++;
 
   const newSong = { id: idGen, name: req.body.name, artist: req.body.artist };
 
-  if (!newSong.name || !newSong.artist) {
+  if (Object.values(newSong).some(element => !element)) {
     idGen = idGenInit;
-    res.status(400).send(error.caption + error.message.songs[2]);
-  }
-  else {
+    res.status(400).send(error.caption + error.message.alertOnMissingAttributes("música"));
+  } else {
     songs.push(newSong);
     res.status(201).json(newSong);
   }
@@ -80,11 +79,7 @@ function update(req, res, next) {
   let index = songs.findIndex(element => element.id === +req.params.id);
 
   if (songs[index]) {
-    songs[index] = {
-      id: +req.params.id,
-      name: req.body.name,
-      artist: req.body.artist,
-    };
+    songs[index] = { id: +req.params.id, name: req.body.name, artist: req.body.artist };
     res.status(204).end();
   } else res.status(404).send(error.caption + error.message.songs[0]);
 }
