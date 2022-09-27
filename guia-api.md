@@ -123,6 +123,7 @@ Reúne as músicas presentes no banco de dados da aplicação.
     * **Status:**
 
         * 201 - Criada
+        * 400 - Atributos insuficientes
 
 ### PUT
 
@@ -201,6 +202,7 @@ Reúne as playlists criadas por usuários com base nas músicas disponíveis.
     * **Status:**
 
         * 201 - Criada
+        * 400 - Atributos insuficientes
 
 ### PUT
 

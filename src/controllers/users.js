@@ -83,17 +83,8 @@ function remove(req, res, next) {
       .send(
         `Usuário de <b><span style="color: #ff0000;">ID #${userId}</span></b> removido com sucesso.`
       );
-    // res.status(204).end();
   }
   res.status(404).send(error.caption + error.message.users[0]);
 }
 
 module.exports = { showAll, show, create, update, remove };
-
-/*
-
-TODO:
-
-- implementar unicidade do username/email (se tentar dar um POST com um nome de usuário já disponível, dar um erro);
-?- implementar 
-*/
