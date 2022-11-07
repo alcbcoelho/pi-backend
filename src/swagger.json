@@ -10,14 +10,6 @@
       "url": "http://localhost:3000"
     }
   ],
-  "tags": {
-    "name": "users",
-    "description": "Dados e operações envolvendo usuários.",
-    "name": "users",
-    "description": "Dados e operações envolvendo usuários.",
-    "name": "users",
-    "description": "Dados e operações envolvendo usuários."
-  },
   "paths": {
     "/songs": {
       "get": {
