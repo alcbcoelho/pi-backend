@@ -1,90 +1,115 @@
-const { User } = require("../classes/User");
-const { users, error } = require("../data");
+// const { User } = require("../classes/User");
+// const { users, error } = require("../data");
+
+const { ObjectId } = require("bson");
+const User = require("../models/userModel");
 
 let idGen = 0;
 
-function showAll(req, res, next) {
+async function showAll(req, res, next) {
+  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
   if (req.query.username) {
-    const user = users.find(element => element.username === req.query.username);
-
-    if (user) res.status(200).json(user);
-    else res.status(404).send(error.caption + error.message.users[0]);
-  } else {
-    users.length && res.status(200).json(users);
-    res.status(404).send(error.caption + error.message.users[1]);
+    await User.findOne({ username: req.query.username })
+      .then(doc => {
+        doc && res.status(200).json(doc);
+        res.status(404).json("Usuário não localizado.");  // REFATORAR
+      })
+      .catch(err => res.status(500).json(err));   //
   }
+  
+  await User.find()
+    .then(doc => res.status(200).json(doc))
+    .catch(err => res.status(500).json(err));
 }
 
-function show(req, res, next) {
-  const user = users.find(element => element.id === +req.params.id);
-
-  user && res.status(200).json(user);
-  res.status(404).send(error.caption + error.message.users[0]);
+async function show(req, res, next) {
+  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+  await User.findOne({ _id: ObjectId(req.params.id) })
+    .then(doc => {
+      doc && res.status(200).json(doc);
+      res.status(404).json("Usuário não localizado."); // REFATORAR
+    })
+    .catch(err => res.status(500).json(err)); //
 }
 
-function create(req, res, next) {
-  try {
-    if (users.find(element => element.username === req.body.username))
-      throw error.caption + error.message.username[0];
+async function create(req, res, next) {
+  const user = new User(req.body);
 
-    idGen++;
+  await user
+    .save()
+    .then(doc => {
+      doc.password = undefined;
+      return res.status(201).json(doc);
+    })
+    .catch(err => {
+      const errorMessage = {};
 
-    while (users.findIndex(element => element.id === idGen) !== -1) idGen++;
+      if (err.errors) {
+        Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
+        // res.status(422).json(errorMessage);
+      }
 
-    users.push(
-      new User(
-        idGen,
-        req.body.username,
-        req.body.password,
-        req.body.firstName,
-        req.body.lastName,
-        req.body.phone,
-        req.body.email
-      )
-    );
-    res.status(201).json(users[users.length - 1]);
-  } catch (e) {
-    res.status(400).send(e);
-  }
+      if (err.code === 11000) {
+        const registeredField = Object.keys(err.keyValue)[0];
+        errorMessage[registeredField] = `Já há um usuário registrado no sistema com o ${registeredField} '${req.body[registeredField]}'.`;  //
+      }
+
+      res.status(422).json(errorMessage);
+    });
 }
 
-function update(req, res, next) {
-  try {
-    if (users.find(element => element.username === req.body.username))
-      throw error.caption + error.message.username[0];
-      
-    let index = users.findIndex(element => element.id === +req.params.id);
-
-    if (users[index]) {
-      users[index] = new User(
-        +req.params.id,
-        req.body.username,
-        req.body.password,
-        req.body.firstName,
-        req.body.lastName,
-        req.body.phone,
-        req.body.email
-      );
-      res.status(204).end();
-    } else res.status(404).send(error.caption + error.message.users[0]);
-  } catch (e) {
-    res.status(400).send(e);
+async function update(req, res, next) {
+  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+  const model = {
+    username: req.body.username,
+    password: req.body.password,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phone: req.body.phone,
+    email: req.body.email
   }
+  
+  await User.findOneAndUpdate({ _id: ObjectId(req.params.id) }, model, {
+    runValidators: true,
+  })
+    .then(doc => {
+      doc && res.status(204).end();
+      res.status(404).json("Usuário não localizado"); // REFATORAR
+    })
+    .catch(err => {
+      // --- REFATORAR
+      const errorMessage = {};
+
+      if (err.errors) {
+        Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
+        res.status(422).json(errorMessage);
+      }
+
+      if (err.code === 11000) {
+        const registeredField = Object.keys(err.keyValue)[0];
+        errorMessage[registeredField] = `Já há um usuário registrado no sistema com o ${registeredField} '${req.body[registeredField]}'.`;  //
+        res.status(422).json(errorMessage);
+      }
+      // ---
+
+      if (Object.keys(req.body).some((value, index) => value !== Object.keys(model)[index])) {
+        const fields = Object.keys(model);
+        errorMessage.erro = `Campos informados não correspondem - parcial ou totalmente - aos esperados: ${Object.keys(model).join("; ")}.`
+        res.status(400).json(errorMessage); //
+      }
+
+      res.status(500).json(err);
+    });
 }
 
-function remove(req, res, next) {
-  const index = users.findIndex(element => element.id === +req.params.id);
-
-  if (users[index]) {
-    const userId = users[index].id;
-    users.splice(index, 1);
-    res
-      .status(200)
-      .send(
-        `Usuário de <b><span style="color: #ff0000;">ID #${userId}</span></b> removido com sucesso.`
-      );
-  }
-  res.status(404).send(error.caption + error.message.users[0]);
+async function remove(req, res, next) {
+  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+  User.findOneAndDelete({ _id: ObjectId(req.params.id) })
+    .then(doc => {
+      doc && res.status(204).end();
+      res.status(404).json("Usuário não localizado."); // REFATORAR
+    })
+    .catch(err => res.status(500).json(err)); //
 }
 
 module.exports = { showAll, show, create, update, remove };
