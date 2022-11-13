@@ -1,10 +1,5 @@
-// const { User } = require("../classes/User");
-// const { users, error } = require("../data");
-
 const { ObjectId } = require("bson");
 const User = require("../models/userModel");
-
-let idGen = 0;
 
 async function showAll(req, res, next) {
   // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
@@ -16,7 +11,7 @@ async function showAll(req, res, next) {
       })
       .catch(err => res.status(500).json(err));   //
   }
-  
+
   await User.find()
     .then(doc => res.status(200).json(doc))
     .catch(err => res.status(500).json(err));
