@@ -2,18 +2,21 @@ const { ObjectId } = require("bson");
 const User = require("../models/userModel");
 
 async function showAll(req, res, next) {
-  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
   if (req.query.username) {
+    // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
     await User.findOne({ username: req.query.username })
       .then(doc => {
-        doc && res.status(200).json(doc);
-        res.status(404).json("Usuário não localizado.");  // REFATORAR
+        if (doc) return res.status(200).json(doc);
+        return res.status(404).json({ erro: "Usuário não encontrado." });  // REFATORAR
       })
       .catch(err => res.status(500).json(err));   //
   }
 
   await User.find()
-    .then(doc => res.status(200).json(doc))
+    .then(doc => {
+      if (doc.length) return res.status(200).json(doc);
+      return res.status(404).json({ erro: "Não há usuários disponíveis." });   //
+    })
     .catch(err => res.status(500).json(err));
 }
 
@@ -21,8 +24,8 @@ async function show(req, res, next) {
   // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
   await User.findOne({ _id: ObjectId(req.params.id) })
     .then(doc => {
-      doc && res.status(200).json(doc);
-      res.status(404).json("Usuário não localizado."); // REFATORAR
+      if (doc) return res.status(200).json(doc);
+      return res.status(404).json({ erro: "Usuário não encontrado." }); // REFATORAR
     })
     .catch(err => res.status(500).json(err)); //
 }
@@ -35,6 +38,8 @@ async function create(req, res, next) {
     .then(doc => {
       doc.password = undefined;
       return res.status(201).json(doc);
+
+      // COLOCAR UMA CONDICIONAL DE ERRO 422 AQUI PARA FONE REPETIDO
     })
     .catch(err => {
       const errorMessage = {};
@@ -46,10 +51,24 @@ async function create(req, res, next) {
 
       if (err.code === 11000) {
         const registeredField = Object.keys(err.keyValue)[0];
-        errorMessage[registeredField] = `Já há um usuário registrado no sistema com o ${registeredField} '${req.body[registeredField]}'.`;  //
+
+        let registeredFieldPT;
+
+        switch (registeredField) {
+          case "username":
+            registeredFieldPT = "nome de usuário";
+            break;
+          case "phone":
+            registeredFieldPT = "telefone";
+            break;
+          case "email":
+            registeredFieldPT = "email";
+        }
+
+        errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`;  //
       }
 
-      res.status(422).json(errorMessage);
+      return res.status(422).json(/* err */errorMessage);
     });
 }
 
@@ -65,11 +84,11 @@ async function update(req, res, next) {
   }
   
   await User.findOneAndUpdate({ _id: ObjectId(req.params.id) }, model, {
-    runValidators: true,
+    runValidators: true
   })
     .then(doc => {
       doc && res.status(204).end();
-      res.status(404).json("Usuário não localizado"); // REFATORAR
+      return res.status(404).json({ erro: "Usuário não encontrado" }); // REFATORAR
     })
     .catch(err => {
       // --- REFATORAR
@@ -77,32 +96,31 @@ async function update(req, res, next) {
 
       if (err.errors) {
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        res.status(422).json(errorMessage);
+        return res.status(422).json(errorMessage);
       }
 
       if (err.code === 11000) {
         const registeredField = Object.keys(err.keyValue)[0];
         errorMessage[registeredField] = `Já há um usuário registrado no sistema com o ${registeredField} '${req.body[registeredField]}'.`;  //
-        res.status(422).json(errorMessage);
+        return res.status(422).json(errorMessage);
       }
       // ---
 
       if (Object.keys(req.body).some((value, index) => value !== Object.keys(model)[index])) {
         const fields = Object.keys(model);
         errorMessage.erro = `Campos informados não correspondem - parcial ou totalmente - aos esperados: ${Object.keys(model).join("; ")}.`
-        res.status(400).json(errorMessage); //
+        return res.status(400).json(errorMessage); //
       }
 
-      res.status(500).json(err);
+      return res.status(500).json(err);
     });
 }
 
 async function remove(req, res, next) {
-  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
   User.findOneAndDelete({ _id: ObjectId(req.params.id) })
     .then(doc => {
-      doc && res.status(204).end();
-      res.status(404).json("Usuário não localizado."); // REFATORAR
+      if (doc) return res.status(204).end();
+      return res.status(404).json({ erro: "Usuário não encontrado." }); // REFATORAR
     })
     .catch(err => res.status(500).json(err)); //
 }

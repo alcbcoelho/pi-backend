@@ -1,103 +1,126 @@
-const { songs, error } = require("../data");
+const { ObjectId } = require("bson");
+const Song = require("../models/songModel");
+const { mandatoryField } = require("../validationMessages");
 
-let idGen = 0;
+/* function generateErrorIfAlreadyRegistered(req, res, err) {
+  if (err?.code === 11000) {
+    const fields = Object.keys(err.keyValue);
+    return res.status(422).json({ erro: `Já consta um registro no sistema para '${req.body[fields[0]]} - ${req.body[fields[1]]}'.` });
+  }
+  // dando erro: 'ERR_HTTP_HEADERS_SENT' *shrug*
+  // esquecer por hora
+} */
 
-// set ids for each user
-songs.length && songs.forEach((element, index) => (element.id = index + 1));
-
-function showAllOrFilter(req, res, next) {
-  const songByName = songs.filter(
-    element => element.name?.toLowerCase() === req.query.name?.toLowerCase()
-  );
-  const songByArtist = songs.filter(
-    element => element.artist?.toLowerCase() === req.query.artist?.toLowerCase()
-  );
-
+async function showAllOrFilter(req, res, next) {
+  // TODO: ver se é possível implementar filtro sem case sensitive
   if (req.query.name && req.query.artist) {
-    if (songByName.length && songByArtist.length) {
-      const song = songs.find(
-        element =>
-          element.name?.toLowerCase() === req.query.name?.toLowerCase() &&
-          element.artist?.toLowerCase() === req.query.artist?.toLowerCase()
-      );
-
-      song && res.status(200).json(song);
-      res.status(404).send(error.caption + error.message.songs[0]);
-    } else {
-      songByName.length &&
-        res.status(404).send(error.caption + error.message.artists[0]);
-      songByArtist.length &&
-        res.status(404).send(error.caption + error.message.songs[0]);
-      res
-        .status(404)
-        .send(
-          `<b>ERRO:</b> ${error.message.artists[0]}<br><br>${error.message.songs[0]}`
-        );
-    }
-  } else if (req.query.name) {
-    if (songByName.length) {
-      songByName.length === 1 && res.status(200).json(...songByName);
-      res.status(200).json(songByName);
-    } else res.status(404).send(error.caption + error.message.songs[0]);
-  } else if (req.query.artist) {
-    if (songByArtist.length) {
-      songByArtist.length === 1 && res.status(200).json(...songByArtist);
-      res.status(200).json(songByArtist);
-    } else res.status(404).send(error.caption + error.message.artists[0]);
-  } else {
-    songs.length && res.status(200).json(songs);
-    res.status(404).send(error.caption + error.message.songs[1]);
+    await Song.findOne({ name: req.query.name, artist: req.query.artist })
+    // dando erro: 'ERR_HTTP_HEADERS_SENT' *shrug*
+      .then(doc => {
+        if (doc) return res.status(200).json(doc);
+        return res.status(404).json({ erro: "Música não encontrada." });
+      })
+      .catch(err => res.status(500).json(err));
   }
-}
 
-function show(req, res, next) {
-  const song = songs.find(element => element.id === +req.params.id);
+  if (req.query.name || req.query.artist) {
+    const dbQuery = req.query.name ? { name: req.query.name } : { artist: req.query.artist };
 
-  song && res.status(200).json(song);
-  res.status(404).send(error.caption + error.message.songs[0]);
-}
+    await Song.find(dbQuery)
+    // dando erro: 'ERR_HTTP_HEADERS_SENT' *shrug*
+      .then(doc => {
+        if (doc.length) return res.status(200).json(doc);
 
-function create(req, res, next) {
-  const idGenInit = idGen;
+        const errorMessage = req.query.name ? "Música não encontrada." : "Artista especificado não encontrado.";  //
 
-  idGen++;
-
-  while (songs.findIndex(element => element.id === idGen) !== -1) idGen++;
-
-  const newSong = { id: idGen, name: req.body.name, artist: req.body.artist };
-
-  if (Object.values(newSong).some(element => !element)) {
-    idGen = idGenInit;
-    res.status(400).send(error.caption + error.message.alertOnMissingAttributes("música"));
-  } else {
-    songs.push(newSong);
-    res.status(201).json(newSong);
+        return res.status(404).json({ erro: errorMessage });
+      })
+      .catch(err => res.status(500).json(err))
   }
+
+  await Song.find()
+    .then(doc => {
+      if (doc.length) return res.status(200).json(doc);
+      return res.status(404).json({ erro: "Não há músicas disponíveis." });  //
+    })
+    .catch(err => res.status(500).json(err));
 }
 
-function update(req, res, next) {
-  let index = songs.findIndex(element => element.id === +req.params.id);
-
-  if (songs[index]) {
-    songs[index] = { id: +req.params.id, name: req.body.name, artist: req.body.artist };
-    res.status(204).end();
-  } else res.status(404).send(error.caption + error.message.songs[0]);
+async function show(req, res, next) {
+  await Song.findOne({ _id: ObjectId(req.params.id) })
+    .then(doc => {
+      if (doc) return res.status(200).json(doc);
+      return res.status(404).json("Música não encontrada.");   //
+    })
+    .catch(err => res.status(500).json(err));   //
 }
 
-function remove(req, res, next) {
-  const index = songs.findIndex(element => element.id === +req.params.id);
+async function create(req, res, next) {
+  const song = new Song(req.body);
 
-  if (songs[index]) {
-    const songDetails = `${songs[index].artist} - ${songs[index].name} (ID #${songs[index].id})`;
+  await song.save()
+    .then(doc => res.status(201).json(doc))
+    .catch(err => {
+      if (err.errors) {
+        const errorMessage = {};
 
-    songs.splice(index, 1);
-    res
-      .status(200)
-      .send(
-        `<b><span style="color: #ff0000;">${songDetails}</span></b> removida com sucesso.`
-      );
-  }
-  res.status(404).send(error.caption + error.message.songs[0]);
+        Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
+        return res.status(422).json(errorMessage);
+      }
+
+      if (err.code === 11000) {
+        const fields = Object.keys(err.keyValue);
+        return res.status(422).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
+      } // refatorar
+      // generateErrorIfAlreadyRegistered(req, res, err);
+      return res.status(500).json(err);
+    })
+}
+
+async function update(req, res, next) {
+  const model = { name: req.body.name, artist: req.body.artist };
+  Song.findOneAndUpdate({ _id: ObjectId(req.params.id) }, model, { runValidators: true })
+    .then(doc => {
+      if (doc) {
+        const errorMessage = {};
+        const fields = Object.keys(model);
+        const values = Object.values(model);
+
+        if (values.every(field => field)) return res.status(204).end();
+
+        values.forEach((field, index) => {
+          if (!field) errorMessage[fields[index]] = mandatoryField();
+        });
+
+        return res.status(422).json(errorMessage);
+      }
+      return res.status(404).json({ erro: "Música não encontrada." });   //
+    })
+    .catch(err => {
+      if (err.code === 11000) {
+        const fields = Object.keys(err.keyValue);
+        return res.status(422).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
+      } // refatorar
+      // generateErrorIfAlreadyRegistered(req, res, err);
+      
+      // linhas 147-159 substituem esse pedaço de código:
+      // if (Object.keys(req.body).some((value, index) => value !== Object.keys(model)[index])) {
+      //   const fields = Object.keys(model);
+      //   errorMessage.erro = `Campos informados não correspondem - parcial ou totalmente - aos esperados: ${Object.keys(model).join("; ")}.`
+      //   return res.status(400).json(errorMessage); //
+      // }
+
+      return res.status(500).json(err);
+    });
+}
+
+async function remove(req, res, next) {
+  Song.findOneAndDelete({ _id: ObjectId(req.params.id) })
+    .then(doc => {
+      if (doc) return res.status(204).end();
+      return res.status(404).json({ erro: "Música não encontrada." });  //
+    })
+    .catch(err => res.status(500).json(err));
 }
 
 module.exports = { showAllOrFilter, show, create, update, remove };
