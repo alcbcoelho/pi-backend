@@ -1,5 +1,6 @@
 const { ObjectId } = require("bson");
 const User = require("../models/userModel");
+const { mandatoryField } = require("../validationMessages");
 
 async function showAll(req, res, next) {
   if (req.query.username) {
@@ -38,15 +39,13 @@ async function create(req, res, next) {
     .then(doc => {
       doc.password = undefined;
       return res.status(201).json(doc);
-
-      // COLOCAR UMA CONDICIONAL DE ERRO 422 AQUI PARA FONE REPETIDO
     })
     .catch(err => {
       const errorMessage = {};
 
       if (err.errors) {
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        // res.status(422).json(errorMessage);
+        return res.status(422).json(errorMessage);
       }
 
       if (err.code === 11000) {
@@ -66,14 +65,15 @@ async function create(req, res, next) {
         }
 
         errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`;  //
+        return res.status(422).json(errorMessage);
+        // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
-      return res.status(422).json(/* err */errorMessage);
+      return res.status(500).json(err);
     });
 }
 
 async function update(req, res, next) {
-  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
   const model = {
     username: req.body.username,
     password: req.body.password,
@@ -87,29 +87,44 @@ async function update(req, res, next) {
     runValidators: true
   })
     .then(doc => {
-      doc && res.status(204).end();
-      return res.status(404).json({ erro: "Usuário não encontrado" }); // REFATORAR
-    })
-    .catch(err => {
-      // --- REFATORAR
-      const errorMessage = {};
+      if (doc) {
+        const errorMessage = {};
+        const fields = Object.keys(model);
+        const values = Object.values(model);
 
-      if (err.errors) {
-        Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
+        if (values.every(field => field)) return res.status(204).end();
+
+        values.forEach((field, index) => {
+          if (!field) errorMessage[fields[index]] = mandatoryField();
+        });
+
         return res.status(422).json(errorMessage);
       }
+      return res.status(404).json({ erro: "Usuário não encontrado" }); //
+    })
+    .catch(err => {
+      // console.log(err); //
+      const errorMessage = {};
 
       if (err.code === 11000) {
         const registeredField = Object.keys(err.keyValue)[0];
-        errorMessage[registeredField] = `Já há um usuário registrado no sistema com o ${registeredField} '${req.body[registeredField]}'.`;  //
-        return res.status(422).json(errorMessage);
-      }
-      // ---
 
-      if (Object.keys(req.body).some((value, index) => value !== Object.keys(model)[index])) {
-        const fields = Object.keys(model);
-        errorMessage.erro = `Campos informados não correspondem - parcial ou totalmente - aos esperados: ${Object.keys(model).join("; ")}.`
-        return res.status(400).json(errorMessage); //
+        let registeredFieldPT;
+
+        switch (registeredField) {
+          case "username":
+            registeredFieldPT = "nome de usuário";
+            break;
+          case "phone":
+            registeredFieldPT = "telefone";
+            break;
+          case "email":
+            registeredFieldPT = "email";
+        }
+
+        errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`;  //
+        return res.status(422).json(errorMessage);
+        // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
       return res.status(500).json(err);

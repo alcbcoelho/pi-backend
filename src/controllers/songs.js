@@ -79,6 +79,7 @@ async function create(req, res, next) {
 
 async function update(req, res, next) {
   const model = { name: req.body.name, artist: req.body.artist };
+
   Song.findOneAndUpdate({ _id: ObjectId(req.params.id) }, model, { runValidators: true })
     .then(doc => {
       if (doc) {
@@ -102,13 +103,6 @@ async function update(req, res, next) {
         return res.status(422).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
-      
-      // linhas 147-159 substituem esse pedaço de código:
-      // if (Object.keys(req.body).some((value, index) => value !== Object.keys(model)[index])) {
-      //   const fields = Object.keys(model);
-      //   errorMessage.erro = `Campos informados não correspondem - parcial ou totalmente - aos esperados: ${Object.keys(model).join("; ")}.`
-      //   return res.status(400).json(errorMessage); //
-      // }
 
       return res.status(500).json(err);
     });

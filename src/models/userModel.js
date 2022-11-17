@@ -37,6 +37,7 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: [true, message.mandatoryField()],
+    unique: true,
     trim: true,
     minLength: [3, message.minLength("Nome de usuário", 3)],
     maxLength: [20, message.maxLength("Nome de usuário", 20)],
@@ -52,18 +53,20 @@ const userSchema = new Schema({
   firstName: {
     type: String,
     required: [true, message.mandatoryField()],
-    set: value => capitalizeString(value),
+    set: value => value && capitalizeString(value),
     trim: true,
   },
   lastName: {
     type: String,
     required: [true, message.mandatoryField()],
-    set: value => capitalizeString(value),
+    set: value => value && capitalizeString(value),
     trim: true,
   },
   phone: {
     type: String,
-    set: value => formatPhoneNumber(value),
+    required: [true, message.mandatoryField()],
+    unique: true,
+    set: value => value && formatPhoneNumber(value),
     validate: {
       validator: value => /\+?\d{2}\s?\d{2}\s?\d{4,5}-?\s?\d{4}/.test(value),
       message:
@@ -73,6 +76,7 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: [true, message.mandatoryField()],
+    unique: true,
     trim: true,
     validate: {
       validator: value => /[\w\d]+@\w+\.\w+/.test(value),
