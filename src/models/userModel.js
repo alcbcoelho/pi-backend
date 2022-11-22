@@ -77,6 +77,7 @@ const userSchema = new Schema({
     type: String,
     required: [true, message.mandatoryField()],
     unique: true,
+    lowercase: true,
     trim: true,
     validate: {
       validator: value => /[\w\d]+@\w+\.\w+/.test(value),

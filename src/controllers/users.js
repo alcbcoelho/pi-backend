@@ -10,7 +10,7 @@ async function showAll(req, res, next) {
         if (doc) return res.status(200).json(doc);
         return res.status(404).json({ erro: "Usuário não encontrado." });  // REFATORAR
       })
-      .catch(err => res.status(500).json(err));   //
+      .catch(err => res.status(500).json(err.message));   //
   }
 
   await User.find()
@@ -18,7 +18,7 @@ async function showAll(req, res, next) {
       if (doc.length) return res.status(200).json(doc);
       return res.status(404).json({ erro: "Não há usuários disponíveis." });   //
     })
-    .catch(err => res.status(500).json(err));
+    .catch(err => res.status(500).json(err.message));
 }
 
 async function show(req, res, next) {
@@ -28,7 +28,7 @@ async function show(req, res, next) {
       if (doc) return res.status(200).json(doc);
       return res.status(404).json({ erro: "Usuário não encontrado." }); // REFATORAR
     })
-    .catch(err => res.status(500).json(err)); //
+    .catch(err => res.status(500).json(err.message)); //
 }
 
 async function create(req, res, next) {
@@ -41,11 +41,12 @@ async function create(req, res, next) {
       return res.status(201).json(doc);
     })
     .catch(err => {
-      const errorMessage = {};
-
+      
       if (err.errors) {
+        const errorMessage = {};
+        
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        return res.status(422).json(errorMessage);
+        return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
       }
 
       if (err.code === 11000) {
@@ -64,12 +65,11 @@ async function create(req, res, next) {
             registeredFieldPT = "email";
         }
 
-        errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`;  //
-        return res.status(422).json(errorMessage);
+        return res.status(422).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
         // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
-      return res.status(500).json(err);
+      return res.status(500).json(err.message);
     });
 }
 
@@ -127,17 +127,17 @@ async function update(req, res, next) {
         // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
-      return res.status(500).json(err);
+      return res.status(500).json(err.message);
     });
 }
 
 async function remove(req, res, next) {
-  User.findOneAndDelete({ _id: ObjectId(req.params.id) })
+  User.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();
       return res.status(404).json({ erro: "Usuário não encontrado." }); // REFATORAR
     })
-    .catch(err => res.status(500).json(err)); //
+    .catch(err => res.status(500).json(err.message)); //
 }
 
 module.exports = { showAll, show, create, update, remove };

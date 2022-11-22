@@ -20,7 +20,7 @@ async function showAllOrFilter(req, res, next) {
         if (doc) return res.status(200).json(doc);
         return res.status(404).json({ erro: "Música não encontrada." });
       })
-      .catch(err => res.status(500).json(err));
+      .catch(err => res.status(500).json(err.message));
   }
 
   if (req.query.name || req.query.artist) {
@@ -35,7 +35,7 @@ async function showAllOrFilter(req, res, next) {
 
         return res.status(404).json({ erro: errorMessage });
       })
-      .catch(err => res.status(500).json(err))
+      .catch(err => res.status(500).json(err.message))
   }
 
   await Song.find()
@@ -43,16 +43,16 @@ async function showAllOrFilter(req, res, next) {
       if (doc.length) return res.status(200).json(doc);
       return res.status(404).json({ erro: "Não há músicas disponíveis." });  //
     })
-    .catch(err => res.status(500).json(err));
+    .catch(err => res.status(500).json(err.message));
 }
 
 async function show(req, res, next) {
   await Song.findOne({ _id: ObjectId(req.params.id) })
     .then(doc => {
       if (doc) return res.status(200).json(doc);
-      return res.status(404).json("Música não encontrada.");   //
+      return res.status(404).json({ erro: "Música não encontrada." });   //
     })
-    .catch(err => res.status(500).json(err));   //
+    .catch(err => res.status(500).json(err.message));   //
 }
 
 async function create(req, res, next) {
@@ -65,7 +65,7 @@ async function create(req, res, next) {
         const errorMessage = {};
 
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        return res.status(422).json(errorMessage);
+        return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
       }
 
       if (err.code === 11000) {
@@ -73,7 +73,7 @@ async function create(req, res, next) {
         return res.status(422).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
-      return res.status(500).json(err);
+      return res.status(500).json(err.message);
     })
 }
 
@@ -104,17 +104,17 @@ async function update(req, res, next) {
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
 
-      return res.status(500).json(err);
+      return res.status(500).json(err.message);
     });
 }
 
 async function remove(req, res, next) {
-  Song.findOneAndDelete({ _id: ObjectId(req.params.id) })
+  Song.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();
       return res.status(404).json({ erro: "Música não encontrada." });  //
     })
-    .catch(err => res.status(500).json(err));
+    .catch(err => res.status(500).json(err.message));
 }
 
 module.exports = { showAllOrFilter, show, create, update, remove };
