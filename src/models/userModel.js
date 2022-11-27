@@ -1,15 +1,22 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
 const message = require("../validationMessages");
 
 // vvv EXPORTAR P/ ARQUIVO SEPARADO vvv
 function capitalizeString(str) {
+  function startsWith(i, regex) {
+    return i === 0 && (!regex.test(str));
+  }
+
   let capitalizedStr = "";
   
   for (let i = 0; i < str.length; i++) {
-    capitalizedStr = (!i) ? capitalizedStr + str[i].toUpperCase() : capitalizedStr + str[i];
+    capitalizedStr = (startsWith(i, /^de /i) || str[i - 1] === " ") ? capitalizedStr + str[i].toUpperCase() : capitalizedStr + str[i];
   }
+
+  // console.log(precededByWhitespace())
 
   return capitalizedStr;
 }
@@ -50,6 +57,11 @@ const userSchema = new Schema({
     maxLength: [20, message.maxLength("Senha", 20)],
     select: false,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+    select: false
+  },
   firstName: {
     type: String,
     required: [true, message.mandatoryField()],
@@ -83,9 +95,15 @@ const userSchema = new Schema({
       validator: value => /[\w\d]+@\w+\.\w+/.test(value),
       message: "Endereço de e-mail deve consistir de parte local seguida de arroba (@) e nome do domínio (exemplo: johndoe@dominio.com)."
     }
-  },
+  }
 }, {
   timestamps: true
+});
+
+userSchema.pre("save", async function(next) {
+  const hash = await bcrypt.hash(this.password, 10);
+  this.password = hash;
+  next();
 });
 
 module.exports = mongoose.model("User", userSchema);

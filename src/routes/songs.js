@@ -1,15 +1,16 @@
 const express = require("express");
-const { showAllOrFilter, show, create, update, remove } = require("../controllers/songs");
+const songsController = require("../controllers/songs");
+const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-router.get("/", showAllOrFilter);
+router.get("/", songsController.showAllOrFilter);
 
-router.get("/:id", show);
+router.get("/:id", songsController.show);
 
-router.post("/", create);
+router.post("/", authMiddleware, songsController.create);
 
-router.put("/:id", update);
+router.put("/:id", authMiddleware, songsController.update);
 
-router.delete("/:id", remove);
+router.delete("/:id", authMiddleware, songsController.remove);
 
 module.exports = router;

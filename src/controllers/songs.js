@@ -13,37 +13,35 @@ const { mandatoryField } = require("../validationMessages");
 
 async function showAllOrFilter(req, res, next) {
   // TODO: ver se é possível implementar filtro sem case sensitive
-  if (req.query.name && req.query.artist) {
-    await Song.findOne({ name: req.query.name, artist: req.query.artist })
-    // dando erro: 'ERR_HTTP_HEADERS_SENT' *shrug*
-      .then(doc => {
-        if (doc) return res.status(200).json(doc);
-        return res.status(404).json({ erro: "Música não encontrada." });
-      })
-      .catch(err => res.status(500).json(err.message));
-  }
-
-  if (req.query.name || req.query.artist) {
-    const dbQuery = req.query.name ? { name: req.query.name } : { artist: req.query.artist };
-
-    await Song.find(dbQuery)
-    // dando erro: 'ERR_HTTP_HEADERS_SENT' *shrug*
-      .then(doc => {
-        if (doc.length) return res.status(200).json(doc);
-
-        const errorMessage = req.query.name ? "Música não encontrada." : "Artista especificado não encontrado.";  //
-
-        return res.status(404).json({ erro: errorMessage });
-      })
-      .catch(err => res.status(500).json(err.message))
-  }
-
-  await Song.find()
+  if (req.query) {
+    if (req.query.name && req.query.artist) {
+      await Song.findOne({ name: req.query.name, artist: req.query.artist })
+        .then(doc => {
+          if (doc) return res.status(200).json(doc);
+          return res.status(404).json({ erro: "Música não encontrada." });
+        })
+        .catch(err => res.status(500).json(err.message));
+    } else {
+      const dbQuery = req.query.name ? { name: req.query.name } : { artist: req.query.artist };
+  
+      await Song.find(dbQuery)
+        .then(doc => {
+          if (doc.length) return res.status(200).json(doc);
+  
+          const errorMessage = req.query.name ? "Música não encontrada." : "Artista especificado não encontrado.";  //
+  
+          return res.status(404).json({ erro: errorMessage });
+        })
+        .catch(err => res.status(500).json(err.message))
+    }
+  } else {
+    await Song.find()
     .then(doc => {
       if (doc.length) return res.status(200).json(doc);
       return res.status(404).json({ erro: "Não há músicas disponíveis." });  //
     })
     .catch(err => res.status(500).json(err.message));
+  }
 }
 
 async function show(req, res, next) {
@@ -80,7 +78,7 @@ async function create(req, res, next) {
 async function update(req, res, next) {
   const model = { name: req.body.name, artist: req.body.artist };
 
-  Song.findOneAndUpdate({ _id: ObjectId(req.params.id) }, model, { runValidators: true })
+  Song.findByIdAndUpdate(req.params.id, model, { runValidators: true })
     .then(doc => {
       if (doc) {
         const errorMessage = {};
@@ -98,12 +96,36 @@ async function update(req, res, next) {
       return res.status(404).json({ erro: "Música não encontrada." });   //
     })
     .catch(err => {
+
+      // 400 - BAD REQUEST
+      if (req.params.id.length !== 24 || err.name === "CastError") {
+        const badRequestMessage = {};
+
+        if (req.params.id.length !== 24)
+          badRequestMessage.erro = "Sintaxe de ID inválida."
+        else {
+          badRequestMessage[
+            err.path
+          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
+        }
+
+        return res.status(400).json(badRequestMessage);
+      } // refatorar
+
+      // 422 - UNPROCESSABLE ENTITY
       if (err.code === 11000) {
         const fields = Object.keys(err.keyValue);
-        return res.status(422).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
+        return res
+          .status(422)
+          .json({
+            erro: `Já consta um registro no sistema para ${
+              req.body[fields[0]]
+            } - ${req.body[fields[1]]}.`,
+          });
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
 
+      // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message);
     });
 }

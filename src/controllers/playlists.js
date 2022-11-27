@@ -1,7 +1,5 @@
 const { ObjectId } = require("bson");
-const { User } = require("../classes/User");
 const Playlist = require("../models/playlistModel");
-const Song = require("../models/songModel");
 const { mandatoryField } = require("../validationMessages");
 
 const populateOptions = { path: "author songs", select: "username name artist" };
@@ -46,51 +44,59 @@ async function create(req, res, next) {
 
       return res.status(500).json(err.message);
     })
-
-  // const idGenInit = idGen;
-
-  // idGen++;
-
-  // while (playlists.findIndex(element => element.id === idGen) !== -1) idGen++;
-
-  // const newPlaylist = {
-  //   id: idGen,
-  //   name: req.body.name,
-  //   author: req.body.author,
-  //   songs: req.body.songs,
-  // };
-
-  // if (Object.values(newPlaylist).some(element => !element)) {
-  //   idGen = idGenInit;
-  //   res.status(400).send(error.caption + error.message.alertOnMissingAttributes("playlist"));
-  // } else {
-  //   playlists.push(newPlaylist);
-  //   res.status(201).json(newPlaylist);
-  // }
 }
 
 async function update(req, res, next) {
+  const model = {
+    name: req.body.name,
+    author: req.body.author,
+    songs: req.body.songs
+  }
 
-  // WIP
+  await Playlist.findByIdAndUpdate(req.params.id, model, { runValidators: true })
+    .then(doc => {
+      if (doc) {
+        const errorMessage = {};
+        const fields = Object.keys(model);
+        const values = Object.values(model);
 
-  // let index = playlists.findIndex(element => element.id === +req.params.id);
+        if (values.every(field => field)) return res.status(204).end();
 
-  // if (playlists[index]) {
-  //   playlists[index] = {
-  //     id: +req.params.id,
-  //     name: req.body.name,
-  //     author: req.body.author,
-  //     songs: req.body.songs,
-  //   };
-  //   res.status(204).end();
-  // } else res.status(404).send(error.caption + error.message.playlists[0]);
+        values.forEach((field, index) => {
+          if (!field) errorMessage[fields[index]] = mandatoryField();
+        });
+
+        return res.status(422).json(errorMessage);
+      }
+      return res.status(404).json({ erro: "Playlist não encontrada." });
+    })
+    .catch(err => {
+
+      // 400 - BAD REQUEST
+      if ((req.params.id.length !== 24) || err.name === "CastError") {
+        const badRequestMessage = {};
+  
+        if (req.params.id.length !== 24)
+          badRequestMessage.erro = "Sintaxe de ID inválida."
+        else {
+          badRequestMessage[
+            err.path
+          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
+        }
+        
+        return res.status(400).json(badRequestMessage);
+      }
+
+      // 500 - INTERNAL SERVER ERROR
+      return res.status(500).json(err.message);
+    });
 }
 
 async function remove(req, res, next) {
   await Playlist.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();
-      return res.status(404).json({ erro: "Playlist não encontrada" });
+      return res.status(404).json({ erro: "Playlist não encontrada." });
     })
     .catch(err => res.status(500).json(err.message));
 }

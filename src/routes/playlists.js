@@ -1,20 +1,20 @@
 const express = require("express");
-const { showAll, show, create, update, remove } = require("../controllers/playlists");
+const playlistsController = require("../controllers/playlists");
+const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-let idGen = 0;
-
 // GET
-router.get("/", showAll);
-router.get("/:id", show);
+router.get("/", playlistsController.showAll);
+
+router.get("/:id", playlistsController.show);
 
 // POST
-router.post("/", create);
+router.post("/", authMiddleware, playlistsController.create);
 
 // PUT
-router.put("/:id", update);
+router.put("/:id", authMiddleware, playlistsController.update);
 
 // DELETE
-router.delete("/:id", remove);
+router.delete("/:id", authMiddleware, playlistsController.remove);
 
 module.exports = router;
