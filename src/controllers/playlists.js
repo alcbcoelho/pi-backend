@@ -1,10 +1,12 @@
 const { ObjectId } = require("bson");
+const jwt = require("jsonwebtoken");
+const config = require("../config/env.json");
 const Playlist = require("../models/playlistModel");
 const { mandatoryField } = require("../validationMessages");
 
 const populateOptions = { path: "author songs", select: "username name artist" };
 
-async function showAll(req, res, next) {
+async function showAll(req, res) {
   await Playlist.find().populate(populateOptions)
   .then(doc => {
     if (doc.length) return res.status(200).json(doc);
@@ -13,7 +15,7 @@ async function showAll(req, res, next) {
   .catch(err => res.status(500).json(err.message));
 }
 
-async function show(req, res, next) {
+async function show(req, res) {
   await Playlist.findOne({ _id: ObjectId(req.params.id) }).populate(populateOptions)
     .then(doc => {
       if (doc) return res.status(200).json(doc);
@@ -22,10 +24,12 @@ async function show(req, res, next) {
     .catch(err => res.status(500).json(err.message));
 }
 
-async function create(req, res, next) {
-  // TODO: Quando implementar autenticação de usuário, fazer o campo "author" automaticamente herdar o nome do usuário que está logado
-
-  const playlist = new Playlist(req.body);
+async function create(req, res) {
+  const playlist = new Playlist({
+    name: req.body.name,
+    author: req.userId,
+    songs: req.body.songs
+  });
 
   await (await playlist.save()).populate(populateOptions)
     .then(doc => {
@@ -46,12 +50,19 @@ async function create(req, res, next) {
     })
 }
 
-async function update(req, res, next) {
+async function update(req, res) {
+  // REFATORAR V
+  const author = await Playlist.findById(req.params.id).then(doc => doc.author);
+  const isPlaylistOwner = (req.userId != author) ? false : true;
+  
+  if (!isPlaylistOwner && !req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });
+  // REFATORAR ^
+  
   const model = {
     name: req.body.name,
-    author: req.body.author,
+    author,
     songs: req.body.songs
-  }
+  };
 
   await Playlist.findByIdAndUpdate(req.params.id, model, { runValidators: true })
     .then(doc => {
@@ -92,7 +103,14 @@ async function update(req, res, next) {
     });
 }
 
-async function remove(req, res, next) {
+async function remove(req, res) {
+  // REFATORAR V
+  const author = await Playlist.findById(req.params.id).then(doc => doc.author);
+  const isPlaylistOwner = (req.userId != author) ? false : true;
+
+  if (!isPlaylistOwner && !req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });
+  // REFATORAR ^
+
   await Playlist.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();

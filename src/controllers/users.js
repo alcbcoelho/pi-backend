@@ -11,37 +11,19 @@ function generateToken(doc) {
   return jwt.sign({ _id: ObjectId(doc._id), isAdmin: doc.isAdmin }, config.tokenSecret)
 }
 
-async function updateUser(req, res, id) {
-  const model = {
-    username: req.body.username,
-    password: req.body.password,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    phone: req.body.phone,
-    email: req.body.email
-  }
-  
-  return await User.findByIdAndUpdate(id, model, {
-    runValidators: true
-  })
-    .then(doc => {
-      if (doc) {
-        const errorMessage = {};
-        const fields = Object.keys(model);
-        const values = Object.values(model);
+// async function attemptToUpdateResourceBasedOnModel(req, res, model) {
+//   const errorMessage = {};
+//   const fields = Object.keys(model);
+//   const values = Object.values(model);
 
-        if (values.every(field => field)) return res.status(204).end();
+//   if (values.every(field => field)) return res.status(204).end();
 
-        values.forEach((field, index) => {
-          if (!field) errorMessage[fields[index]] = mandatoryField();
-        });
+//   values.forEach((field, index) => {
+//     if (!field) errorMessage[fields[index]] = mandatoryField();
+//   });
 
-        return res.status(422).json(errorMessage);
-      }
-      if (id === req.userId) return res.status(401).json({ erro: "Acesso não autorizado" }); //
-      return res.status(404).json({ erro: "Usuário não encontrado" });  //
-    })
-}
+//   return res.status(422).json(errorMessage);
+// }
 
 async function removeUser(req, res, id) {
   return await User.findByIdAndDelete(id)
@@ -160,7 +142,35 @@ async function authenticate(req, res) {
 }
 
 async function update(req, res) {
-  updateUser(req, res, req.userId)
+  const model = {
+    username: req.body.username,
+    password: req.body.password,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phone: req.body.phone,
+    email: req.body.email,
+  };
+
+  await User.findByIdAndUpdate(req.userId, model, {
+    runValidators: true,
+  })
+    .then(doc => {
+      if (doc) {
+        const errorMessage = {};
+        const fields = Object.keys(model);
+        const values = Object.values(model);
+      
+        if (values.every(field => field)) return res.status(204).end();
+      
+        values.forEach((field, index) => {
+          if (!field) errorMessage[fields[index]] = mandatoryField();
+        });
+      
+        return res.status(422).json(errorMessage);
+        // attemptToUpdateResourceBasedOnModel(res, model);
+      }
+      return res.status(401).json({ erro: "Acesso não autorizado" }); //
+    })
     .catch(err => {
       // console.log(err); //
 
@@ -171,11 +181,13 @@ async function update(req, res) {
       if (err.name === "CastError") {
         const badRequestMessage = {};
 
-        badRequestMessage[err.path] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
+        badRequestMessage[
+          err.path
+        ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
 
         return res.status(400).json(badRequestMessage);
       }
-      
+
       // 422 - UNPROCESSABLE ENTITY
       if (err.code === 11000) {
         const errorMessage = {};
@@ -207,7 +219,28 @@ async function update(req, res) {
 async function updateById(req, res) {
   if (!req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });  //
 
-  updateUser(req, res, req.params.id)
+  const model = { isAdmin: req.body.isAdmin };
+  
+  await User.findByIdAndUpdate(req.params.id, model, {
+    runValidators: true
+  })
+    .then(doc => {
+      if (doc) {
+        const errorMessage = {};
+        const fields = Object.keys(model);
+        const values = Object.values(model);
+      
+        if (values.every(field => field)) return res.status(204).end();
+      
+        values.forEach((field, index) => {
+          if (!field) errorMessage[fields[index]] = mandatoryField();
+        });
+      
+        return res.status(422).json(errorMessage);
+        // attemptToUpdateResourceBasedOnModel(res, model);
+      }
+      return res.status(404).json({ erro: "Usuário não encontrado" });  //
+    })
     .catch(err => {
       // console.log(err); //
 

@@ -14,7 +14,7 @@ const playlistSchema = new Schema({
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: [true, message.mandatoryField()],
+    // required: [true, message.mandatoryField()],
   },
   // songs: {
   //   type: [

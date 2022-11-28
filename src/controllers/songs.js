@@ -11,9 +11,9 @@ const { mandatoryField } = require("../validationMessages");
   // esquecer por hora
 } */
 
-async function showAllOrFilter(req, res, next) {
+async function showAllOrFilter(req, res) {
   // TODO: ver se é possível implementar filtro sem case sensitive
-  if (req.query) {
+  if (Object.keys(req.query).length) {
     if (req.query.name && req.query.artist) {
       await Song.findOne({ name: req.query.name, artist: req.query.artist })
         .then(doc => {
@@ -44,7 +44,7 @@ async function showAllOrFilter(req, res, next) {
   }
 }
 
-async function show(req, res, next) {
+async function show(req, res) {
   await Song.findOne({ _id: ObjectId(req.params.id) })
     .then(doc => {
       if (doc) return res.status(200).json(doc);
@@ -53,7 +53,9 @@ async function show(req, res, next) {
     .catch(err => res.status(500).json(err.message));   //
 }
 
-async function create(req, res, next) {
+async function create(req, res) {
+  if (!req.isAdmin) return res.status(401).json({ error: "Acesso não autorizado" });
+
   const song = new Song(req.body);
 
   await song.save()
@@ -75,7 +77,9 @@ async function create(req, res, next) {
     })
 }
 
-async function update(req, res, next) {
+async function update(req, res) {
+  if (!req.isAdmin) return res.status(401).json({ error: "Acesso não autorizado" });
+
   const model = { name: req.body.name, artist: req.body.artist };
 
   Song.findByIdAndUpdate(req.params.id, model, { runValidators: true })
@@ -130,7 +134,9 @@ async function update(req, res, next) {
     });
 }
 
-async function remove(req, res, next) {
+async function remove(req, res) {
+  if (!req.isAdmin) return res.status(401).json({ error: "Acesso não autorizado" });
+
   Song.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();
