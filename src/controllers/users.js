@@ -11,20 +11,6 @@ function generateToken(doc) {
   return jwt.sign({ _id: ObjectId(doc._id), isAdmin: doc.isAdmin }, config.tokenSecret)
 }
 
-// async function attemptToUpdateResourceBasedOnModel(req, res, model) {
-//   const errorMessage = {};
-//   const fields = Object.keys(model);
-//   const values = Object.values(model);
-
-//   if (values.every(field => field)) return res.status(204).end();
-
-//   values.forEach((field, index) => {
-//     if (!field) errorMessage[fields[index]] = mandatoryField();
-//   });
-
-//   return res.status(422).json(errorMessage);
-// }
-
 async function removeUser(req, res, id) {
   return await User.findByIdAndDelete(id)
   .then(doc => {
@@ -142,78 +128,55 @@ async function authenticate(req, res) {
 }
 
 async function update(req, res) {
-  const model = {
-    username: req.body.username,
-    password: req.body.password,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    phone: req.body.phone,
-    email: req.body.email,
-  };
-
-  await User.findByIdAndUpdate(req.userId, model, {
-    runValidators: true,
-  })
-    .then(doc => {
-      if (doc) {
-        const errorMessage = {};
-        const fields = Object.keys(model);
-        const values = Object.values(model);
-      
-        if (values.every(field => field)) return res.status(204).end();
-      
-        values.forEach((field, index) => {
-          if (!field) errorMessage[fields[index]] = mandatoryField();
-        });
-      
-        return res.status(422).json(errorMessage);
-        // attemptToUpdateResourceBasedOnModel(res, model);
-      }
-      return res.status(401).json({ erro: "Acesso não autorizado" }); //
-    })
-    .catch(err => {
-      // console.log(err); //
-
-      // TODO: TENTAR RESOLVER DISPLAY DE ERRO DE VALIDAÇÃO
-      // "Validation failed: password: Senha deve conter no mínimo 6 caracteres."
-
-      // 400 - BAD REQUEST
-      if (err.name === "CastError") {
-        const badRequestMessage = {};
-
-        badRequestMessage[
-          err.path
-        ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
-
-        return res.status(400).json(badRequestMessage);
-      }
-
-      // 422 - UNPROCESSABLE ENTITY
-      if (err.code === 11000) {
-        const errorMessage = {};
-        const registeredField = Object.keys(err.keyValue)[0];
-
-        let registeredFieldPT;
-
-        switch (registeredField) {
-          case "username":
-            registeredFieldPT = "nome de usuário";
-            break;
-          case "phone":
-            registeredFieldPT = "telefone";
-            break;
-          case "email":
-            registeredFieldPT = "email";
-        }
-
-        errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`; //
-        return res.status(422).json(errorMessage);
-        // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
-      }
-
-      // 500 - INTERNAL SERVER ERROR
-      return res.status(500).json(err.message);
+  try {
+    const targettedUser = await User.findOne({ _id: ObjectId(req.userId) }).select({
+      username: 1,
+      password: 1,
+      firstName: 1,
+      lastName: 1,
+      phone: 1,
+      email: 1
     });
+
+    const fields = Object.keys(targettedUser.toObject());
+    fields.shift();
+
+    for (let i = 0; i < fields.length; i++) {
+      targettedUser[fields[i]] = req.body[fields[i]];
+    }
+    
+    await targettedUser.save();
+    res.status(204).end();
+  } catch (err) {
+    if (err.errors) {
+      const errorMessage = {};
+      
+      Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
+      return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
+    }
+
+    if (err.code === 11000) {
+      const registeredField = Object.keys(err.keyValue)[0];
+
+      let registeredFieldPT;
+
+      switch (registeredField) {
+        case "username":
+          registeredFieldPT = "nome de usuário";
+          break;
+        case "phone":
+          registeredFieldPT = "telefone";
+          break;
+        case "email":
+          registeredFieldPT = "email";
+      }
+
+      return res.status(422).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
+      // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
+    }
+
+    return res.status(500).json(err.message);
+  }
 }
 
 async function updateById(req, res) {
@@ -230,14 +193,22 @@ async function updateById(req, res) {
         const fields = Object.keys(model);
         const values = Object.values(model);
       
-        if (values.every(field => field)) return res.status(204).end();
+        if (values.every(field => field)) {
+          const { _id, username, isAdmin } = doc;
+          const successfulUpdate = {
+            message: "Status de administrador atualizado com sucesso",
+            user: { _id, username, isAdmin } /* User.findById(doc._id).select({ isAdmin: 1, createdAt: 0, updatedAt: 0, __v: 0 }) */,
+            token: generateToken(doc)
+          }
+
+          return res.json(successfulUpdate);
+        }
       
         values.forEach((field, index) => {
           if (!field) errorMessage[fields[index]] = mandatoryField();
         });
       
         return res.status(422).json(errorMessage);
-        // attemptToUpdateResourceBasedOnModel(res, model);
       }
       return res.status(404).json({ erro: "Usuário não encontrado" });  //
     })

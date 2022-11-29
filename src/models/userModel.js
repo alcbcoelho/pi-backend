@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
 const message = require("../validationMessages");
+const { schema } = require("./songModel");
 
 // vvv EXPORTAR P/ ARQUIVO SEPARADO vvv
 function capitalizeString(str) {
@@ -20,6 +21,10 @@ function capitalizeString(str) {
 
   return capitalizedStr;
 }
+
+// async function generateHashedPassword(next) {
+  
+// }
 
 function formatPhoneNumber(str) {
   const segments = [];
@@ -105,5 +110,21 @@ userSchema.pre("save", async function(next) {
   this.password = hash;
   next();
 });
+
+// userSchema.post("findOneAndUpdate", async function(next) {
+//   console.log("NEW PASSWORD: ", this.password); //
+
+//   const hash = await bcrypt.hash(this.password, 10);
+//   this.password = hash;
+//   console.log("HASHED");  //
+//   // if (!bcrypt.compare(this.password, await this.model.findBy)) {
+//   //   console.log("NEW PASSWORD: ", this.password); //
+
+//   //   const hash = bcrypt.hash(this.password, 10);
+//   //   this.password = hash;
+//   //   console.log("HASHED");  //
+//   // }
+//   next();
+// });
 
 module.exports = mongoose.model("User", userSchema);

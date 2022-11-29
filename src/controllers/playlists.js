@@ -1,6 +1,4 @@
 const { ObjectId } = require("bson");
-const jwt = require("jsonwebtoken");
-const config = require("../config/env.json");
 const Playlist = require("../models/playlistModel");
 const { mandatoryField } = require("../validationMessages");
 
