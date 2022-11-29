@@ -2,20 +2,14 @@ const { ObjectId } = require("bson");
 const Song = require("../models/songModel");
 const { mandatoryField } = require("../validationMessages");
 
-/* function generateErrorIfAlreadyRegistered(req, res, err) {
-  if (err?.code === 11000) {
-    const fields = Object.keys(err.keyValue);
-    return res.status(422).json({ erro: `Já consta um registro no sistema para '${req.body[fields[0]]} - ${req.body[fields[1]]}'.` });
-  }
-  // dando erro: 'ERR_HTTP_HEADERS_SENT' *shrug*
-  // esquecer por hora
-} */
+const filterOut__v = require("../misc/filterOut__v");
 
 async function showAllOrFilter(req, res) {
   // TODO: ver se é possível implementar filtro sem case sensitive
   if (Object.keys(req.query).length) {
     if (req.query.name && req.query.artist) {
       await Song.findOne({ name: req.query.name, artist: req.query.artist })
+        .select(filterOut__v)
         .then(doc => {
           if (doc) return res.status(200).json(doc);
           return res.status(404).json({ erro: "Música não encontrada." });
@@ -25,6 +19,7 @@ async function showAllOrFilter(req, res) {
       const dbQuery = req.query.name ? { name: req.query.name } : { artist: req.query.artist };
   
       await Song.find(dbQuery)
+        .select(filterOut__v)
         .then(doc => {
           if (doc.length) return res.status(200).json(doc);
   
@@ -36,6 +31,7 @@ async function showAllOrFilter(req, res) {
     }
   } else {
     await Song.find()
+    .select(filterOut__v)
     .then(doc => {
       if (doc.length) return res.status(200).json(doc);
       return res.status(404).json({ erro: "Não há músicas disponíveis." });  //
@@ -59,7 +55,7 @@ async function create(req, res) {
   const song = new Song(req.body);
 
   await song.save()
-    .then(doc => res.status(201).json(doc))
+    .then(async doc => res.status(201).json(await Song.findById(doc._id).select(filterOut__v)))
     .catch(err => {
       if (err.errors) {
         const errorMessage = {};
@@ -70,7 +66,7 @@ async function create(req, res) {
 
       if (err.code === 11000) {
         const fields = Object.keys(err.keyValue);
-        return res.status(422).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
+        return res.status(400).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
       return res.status(500).json(err.message);

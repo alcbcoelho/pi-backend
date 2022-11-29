@@ -11,15 +11,6 @@ function generateToken(doc) {
   return jwt.sign({ _id: ObjectId(doc._id), isAdmin: doc.isAdmin }, config.tokenSecret)
 }
 
-async function removeUser(req, res, id) {
-  return await User.findByIdAndDelete(id)
-  .then(doc => {
-    if (doc) return res.status(204).end();
-    if (id === req.userId) return res.status(401).json({ erro: "Acesso não autorizado" }); // REFATORAR
-    return res.status(404).json({ erro: "Usuário não encontrado" });  // REFATORAR
-  })
-}
-
 //
 
 async function showAll(req, res) {
@@ -98,7 +89,7 @@ async function register(req, res) {
             registeredFieldPT = "email";
         }
 
-        return res.status(422).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
+        return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
         // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
@@ -171,7 +162,7 @@ async function update(req, res) {
           registeredFieldPT = "email";
       }
 
-      return res.status(422).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
+      return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
       // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
     }
 
@@ -233,7 +224,6 @@ async function updateById(req, res) {
         return res.status(400).json(badRequestMessage);
       } // refatorar
       
-      // 422 - UNPROCESSABLE ENTITY
       if (err.code === 11000) {
         const errorMessage = {};
         const registeredField = Object.keys(err.keyValue)[0];
@@ -252,7 +242,7 @@ async function updateById(req, res) {
         }
 
         errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`; //
-        return res.status(422).json(errorMessage);
+        return res.status(400).json(errorMessage);
         // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
@@ -262,16 +252,20 @@ async function updateById(req, res) {
 }
 
 async function remove(req, res) {
-  removeUser(req, res, req.userId).catch(err => res.status(500).json(err.message)); //
-}
-
-async function removeById(req, res) {
   if (!req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });  //
 
-  removeUser(req, res, req.userId)
+  if (req.params.id === req.userId) return res.status(403).json({ erro: "Não é permitido deletar a própria conta" });
+
+  if ((await User.findById(req.params.id).select({ isAdmin: 1 })).isAdmin) return res.status(403).json({ erro: "Não é permitido deletar a conta de outro administrador" });
+
+  await User.findByIdAndDelete(req.params.id)
+  .then(doc => {
+    if (doc) return res.status(204).end();
+    return res.status(404).json({ erro: "Usuário não encontrado" });  // REFATORAR
+  })
     .catch(err => {
       // 400 - BAD REQUEST
-      if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida." });
+      if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida" });
 
       // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message)
@@ -285,6 +279,5 @@ module.exports = {
   authenticate,
   update,
   updateById,
-  remove,
-  removeById
+  remove
 };

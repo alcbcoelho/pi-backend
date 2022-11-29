@@ -111,20 +111,4 @@ userSchema.pre("save", async function(next) {
   next();
 });
 
-// userSchema.post("findOneAndUpdate", async function(next) {
-//   console.log("NEW PASSWORD: ", this.password); //
-
-//   const hash = await bcrypt.hash(this.password, 10);
-//   this.password = hash;
-//   console.log("HASHED");  //
-//   // if (!bcrypt.compare(this.password, await this.model.findBy)) {
-//   //   console.log("NEW PASSWORD: ", this.password); //
-
-//   //   const hash = bcrypt.hash(this.password, 10);
-//   //   this.password = hash;
-//   //   console.log("HASHED");  //
-//   // }
-//   next();
-// });
-
 module.exports = mongoose.model("User", userSchema);

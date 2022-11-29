@@ -16,8 +16,6 @@ router.put("", authMiddleware/* [authMiddleware, hashMiddleware] */, usersContro
 
 router.put("/:id", authMiddleware, usersController.updateById);
 
-router.delete("", authMiddleware, usersController.remove);
-
-router.delete("/:id", authMiddleware, usersController.removeById);
+router.delete("/:id", authMiddleware, usersController.remove);
 
 module.exports = router;

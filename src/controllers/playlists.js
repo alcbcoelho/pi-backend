@@ -2,10 +2,13 @@ const { ObjectId } = require("bson");
 const Playlist = require("../models/playlistModel");
 const { mandatoryField } = require("../validationMessages");
 
+const filterOut__v = require("../misc/filterOut__v");
 const populateOptions = { path: "author songs", select: "username name artist" };
 
 async function showAll(req, res) {
-  await Playlist.find().populate(populateOptions)
+  await Playlist.find()
+  .populate(populateOptions)
+  .select(filterOut__v)
   .then(doc => {
     if (doc.length) return res.status(200).json(doc);
     return res.status(404).json({ erro: "Não há playlists disponíveis." });   //
@@ -14,7 +17,9 @@ async function showAll(req, res) {
 }
 
 async function show(req, res) {
-  await Playlist.findOne({ _id: ObjectId(req.params.id) }).populate(populateOptions)
+  await Playlist.findOne({ _id: ObjectId(req.params.id) })
+    .populate(populateOptions)
+    .select(filterOut__v)
     .then(doc => {
       if (doc) return res.status(200).json(doc);
       return res.status(404).json({ erro: "Playlist não encontrada." });

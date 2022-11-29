@@ -15,7 +15,7 @@
       "get": {
         "tags": ["Songs"],
         "summary": "Visualizar lista de músicas",
-        "description": "Retorna um array de objetos com atributos de cada música disponível. Caso os parâmetros de consulta (query params) sejam especificados, a(s) música(s) retornada(s) é(são) filtrada(s) de acordo com cada parâmetro.",
+        "description": "Retorna um lista de documentos com atributos de cada música disponível. Caso os parâmetros de consulta (query params) sejam especificados, a(s) música(s) retornada(s) é(são) filtrada(s) de acordo com cada parâmetro.",
         "parameters": [
           {
             "name": "name",
@@ -38,21 +38,24 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Users"
+                    "$ref": "#/components/schemas/Songs"
                   }
                 }
               }
             }
           },
           "404": {
-            "description": "Indisponibilidade de músicas cadastradas"
+            "description": "Indisponibilidade de músicas cadastradas/música não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "post": {
         "tags": ["Songs"],
         "summary": "Inserir nova música",
-        "description": "Insere uma nova música ao array de músicas disponíveis.",
+        "description": "**Operação exclusiva a administradores do sistema.**\n\nInsere uma nova música à coleção de músicas do sistema.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -75,7 +78,13 @@
             }
           },
           "400": {
-            "description": "Atributos insuficientes"
+            "description": "Atributo(s) conflitante(s) com documento já cadastrado no sistema"
+          },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
+          "422": {
+            "description": "Atributo(s) obrigatório(s) não especificado(s)"
           }
         }
       }
@@ -84,7 +93,7 @@
       "get": {
         "tags": ["Songs"],
         "summary": "Visualizar música por ID",
-        "description": "Retorna um objeto com atributos da música de ID correspondente ao parâmetro inserido na URL.",
+        "description": "Retorna um documento com atributos da música de ID correspondente ao parâmetro inserido na URL.",
         "parameters": [
           {
             "name": "id",
@@ -107,13 +116,16 @@
           },
           "404": {
             "description": "Música não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "put": {
         "tags": ["Songs"],
         "summary": "Atualizar música",
-        "description": "Atualiza atributos de música de ID correspondente ao parâmetro especificado na URL.",
+        "description": "**Operação exclusiva a administradores do sistema.**\n\nAtualiza atributos de música de ID correspondente ao parâmetro especificado na URL.",
         "parameters": [
           {
             "name": "id",
@@ -135,15 +147,27 @@
           "204": {
             "description": "Atributo(s) atualizado(s)"
           },
+          "400": {
+            "description": "Sintaxe de parâmetro de ID inválida/tipo do valor inserido não correspondente ao esperado"
+          },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
           "404": {
             "description": "Música não encontrada"
+          },
+          "422": {
+            "description": "Atributo(s) conflitante(s) com documento já cadastrado no sistema"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "delete": {
         "tags": ["Songs"],
         "summary": "Remover música",
-        "description": "Remove do array de músicas a música de ID correspondente ao parâmetro especificado na URL.",
+        "description": "**Operação exclusiva a administradores do sistema.**\n\nRemove da coleção de músicas a música de ID correspondente ao parâmetro especificado na URL.",
         "parameters": [
           {
             "name": "id",
@@ -156,19 +180,17 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Música removida",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string",
-                  "example": "<b><span style='color: #ff0000;'>ABBA - Dancing Queen (ID #1)</span></b> removida com sucesso."
-                }
-              }
-            }
+          "204": {
+            "description": "Música removida"
+          },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
           },
           "404": {
             "description": "Música não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }
@@ -177,7 +199,7 @@
       "get": {
         "tags": ["Playlists"],
         "summary": "Visualizar lista de playlists",
-        "description": "Retorna um array de objetos com atributos de cada playlist disponível.",
+        "description": "Retorna uma lista de documentos com atributos de cada playlist cadastrada no sistema.",
         "responses": {
           "200": {
             "description": "Playlist encontrada",
@@ -192,13 +214,16 @@
           },
           "404": {
             "description": "Indisponibilidade de playlists cadastradas"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "post": {
         "tags": ["Playlists"],
         "summary": "Criar nova playlist",
-        "description": "Insere uma nova playlist ao array de playlists disponíveis.",
+        "description": "**Operação exclusiva a usuários ou administradores do sistema.**\n\nInsere uma nova playlist à coleção de playlists do sistema.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -222,6 +247,15 @@
           },
           "400": {
             "description": "Atributos insuficientes"
+          },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
+          "422": {
+            "description": "Atributo(s) obrigatório(s) não especificado(s)"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }
@@ -230,7 +264,7 @@
       "get": {
         "tags": ["Playlists"],
         "summary": "Visualizar playlist por ID",
-        "description": "Retorna um objeto com atributos da playlist de ID correspondente ao parâmetro inserido na URL.",
+        "description": "Retorna um documento com atributos da playlist de ID correspondente ao parâmetro inserido na URL.",
         "parameters": [
           {
             "name": "id",
@@ -240,7 +274,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Playlist encontrada",
             "content": {
               "application/json": {
@@ -253,13 +287,16 @@
           },
           "404": {
             "description": "Playlist não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "put": {
         "tags": ["Playlists"],
         "summary": "Atualizar playlist",
-        "description": "Atualiza atributos da playlist de ID correspondente ao parâmetro especificado na URL.",
+        "description": "**Operação exclusiva a usuários ou administradores do sistema.**\n\nAtualiza atributos da playlist de ID correspondente ao parâmetro especificado na URL.",
         "parameters": [
           {
             "name": "id",
@@ -281,15 +318,24 @@
           "204": {
             "description": "Atributo(s) atualizado(s)"
           },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
+          "400": {
+            "description": "Sintaxe de parâmetro de ID inválida/tipo do valor inserido não correspondente ao esperado"
+          },
           "404": {
             "description": "Playlist não encontrada"
+          },
+          "422": {
+            "description": "Atributo(s) obrigatório(s) não especificado(s)"
           }
         }
       },
       "delete": {
         "tags": ["Playlists"],
         "summary": "Remover playlist",
-        "description": "Remove do array de playlists a playlist de ID correspondente ao parâmetro especificado na URL.",
+        "description": "**Operação exclusiva a usuários ou administradores do sistema.**\n\nRemove da coleção de playlists a playlist de ID correspondente ao parâmetro especificado na URL.",
         "parameters": [
           {
             "name": "id",
@@ -302,19 +348,17 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Playlist removida",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string",
-                  "example": "Playlist <b><span style='color: #ff0000;'>Rock Anos 70 (ID #1)</span></b> removida com sucesso."
-                }
-              }
-            }
+          "204": {
+            "description": "Playlist removida"
+          },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
           },
           "404": {
             "description": "Playlist não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }
@@ -323,7 +367,7 @@
       "get": {
         "tags": ["Users"],
         "summary": "Visualizar lista de usuários",
-        "description": "Retorna um array de objetos com atributos de cada usuário cadastrado. Caso especificado um nome de usuário como parâmetro de consulta (query param), é retornado o objeto associado a este usuário.",
+        "description": "Retorna uma lista de documentos com atributos de cada usuário cadastrado. Caso especificado um nome de usuário como parâmetro de consulta (query param), é retornado o objeto associado a este usuário.",
         "parameters": [
           {
             "name": "username",
@@ -347,37 +391,41 @@
             }
           },
           "404": {
-            "description": "Indisponibilidade de usuários cadastrados"
+            "description": "Indisponibilidade de usuários cadastrados/usuário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
-      "post": {
+      "put": {
         "tags": ["Users"],
-        "summary": "Cadastrar novo usuário",
-        "description": "Insere um novo usuário ao array de usuários cadastrados.",
+        "summary": "Atualizar usuário",
+        "description": "**Operação exclusiva a usuários e administradores do sistema.**\n\nPermite com que o usuário logado atualize seus atributos primários (nome de usuário, senha, nome, sobrenome, telefone e e-mail).",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Users"
+                "$ref": "#/components/schemas/UserRegistration"
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Usuário inserido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/Users"
-                }
-              }
-            }
+          "204": {
+            "description": "Atributo(s) atualizado(s)"
           },
           "400": {
-            "description": "Nome de usuário já em uso"
+            "description": "Atributo(s) conflitante(s) com documento já cadastrado no sistema"
+          },
+          "401": {
+            "description":"Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
+          "422": {
+            "description": "Atributo(s) obrigatório(s) não especificado(s)"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }
@@ -386,7 +434,7 @@
       "get": {
         "tags": ["Users"],
         "summary": "Visualizar usuário por ID",
-        "description": "Retorna um objeto com atributos do usuário de ID correspondente ao parâmetro inserido na URL.",
+        "description": "Retorna um documento com atributos do usuário de ID correspondente ao parâmetro inserido na URL.",
         "parameters": [
           {
             "name": "id",
@@ -407,15 +455,21 @@
               }
             }
           },
+          "400": {
+            "description": "Sintaxe de parâmetro de ID inválida"
+          },
           "404": {
             "description": "Usuário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "put": {
         "tags": ["Users"],
         "summary": "Atualizar usuário",
-        "description": "Atualiza atributos do usuário de ID correspondente ao parâmetro especificado na URL.",
+        "description": "**Operação exclusiva a administradores do sistema.**\n\nAtualiza o usuário de ID correspondente ao parâmetro especificado na URL para que lhe seja concedido ou retirado privilégio de administrador.",
         "parameters": [
           {
             "name": "id",
@@ -428,27 +482,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Users"
+                "$ref": "#/components/schemas/AdminRequest"
               }
             }
           }
         },
         "responses": {
-          "204": {
-            "description": "Atributo(s) atualizado(s)"
+          "200": {
+            "description": "Status de administrador atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/AdminResponse"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Nome de usuário já em uso"
+            "description": "Sintaxe de parâmetro de ID inválida/tipo do valor inserido não correspondente ao esperado/atributo(s) conflitante(s) com documento já cadastrado no sistema"
           },
-          "404": {
-            "description": "Usuário não encontrado"
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       },
       "delete": {
         "tags": ["Users"],
         "summary": "Remover usuário",
-        "description": "Remove do array de usuários cadastrados o usuário de ID correspondente ao parâmetro especificado na URL",
+        "description": "**Operação exclusiva a administradores do sistema.**\n\nRemove do coleção de usuários cadastrados o usuário de ID correspondente ao parâmetro especificado na URL",
         "parameters": [
           {
             "name": "id",
@@ -456,24 +521,110 @@
             "description": "ID do usuário",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Usuário removido",
+          "204": {
+            "description": "Usuário removido"
+          },
+          "400": {
+            "description": "Sintaxe de parâmetro de ID inválida"
+          },
+          "401": {
+            "description": "Acesso não autorizado/erro na autorização/token inválido ou mal-formatado"
+          },
+          "403": {
+            "description": "Impossibilidade de remoção da própria conta, ou da conta de outro administrador"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Cadastrar novo usuário",
+        "description": "Registra um novo usuário à coleção de usuários cadastrados.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário cadastrado",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "example": "Usuário de <b><span style='color: #ff0000;'>ID #77</span></b> removido com sucesso."
+                  "type": "object",
+                  "$ref": "#/components/schemas/RegisteredUser"
                 }
               }
             }
           },
+          "400": {
+            "description": "Atributo(s) conflitante(s) com documento já cadastrado no sistema"
+          },
+          "422": {
+            "description": "Atributo(s) obrigatório(s) não especificado(s)"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Iniciar sessão",
+        "description": "Inicia sessão com uma conta de usuário já existente.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/SuccessfulLogin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Atributo(s) conflitante(s) com documento já cadastrado no sistema"
+          },
+          "401": {
+            "description": "Senha incorreta"
+          },
           "404": {
-            "description": "Usuário não encontrado"
+            "description": "Usuário não cadastrado"
+          },
+          "422": {
+            "description": "Atributo(s) obrigatório(s) não especificado(s)"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }
@@ -484,9 +635,9 @@
       "Songs": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
+          "_id": {
+            "type": "string",
+            "example": "63733d433d230c1e60a0ab3f"
           },
           "name": {
             "type": "string",
@@ -501,33 +652,84 @@
       "Playlists": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
+          "_id": {
+            "type": "string",
+            "example": "6384248621c567eb442d3dc5"
           },
           "name": {
             "type": "string",
             "example": "Rock Anos 70"
           },
           "author": {
-            "type": "string",
-            "example": "/users/1"
+            "type": "object",
+            "example": {
+              "_id": "6384166a347d05c98f339fa8",
+              "username": "André"
+            }
           },
           "songs": {
-            "type": "string[]",
+            "type": "object[]",
             "example": [
-              "/songs/49",
-              "/songs/99",
-              "/songs/26",
-              "/songs/39",
-              "/songs/13",
-              "/songs/89",
-              "/songs/31",
-              "/songs/2",
-              "/songs/25",
-              "/songs/70",
-              "/songs/30",
-              "/songs/50"
+              {
+                "_id": "637341723d230c1e60a0ab9f",
+                "name": "Stairway to Heaven",
+                "artist": "Led Zeppelin"
+              },
+              {
+                "_id": "63734aa066bd5935616b6f4b",
+                "name": "La Grange",
+                "artist": "ZZ Top"
+              },
+              {
+                "_id": "6373405c3d230c1e60a0ab71",
+                "name": "Highway Star",
+                "artist": "Deep Purple"
+              },
+              {
+                "_id": "637340f83d230c1e60a0ab8b",
+                "name": "Hey Joe",
+                "artist": "Jimi Hendrix"
+              },
+              {
+                "_id": "63733f4e3d230c1e60a0ab57",
+                "name": "Iron Man",
+                "artist": "Black Sabbath"
+              },
+              {
+                "_id": "63734a4566bd5935616b6f37",
+                "name": "Jailbreak",
+                "artist": "Thin Lizzy"
+              },
+              {
+                "_id": "637340973d230c1e60a0ab7b",
+                "name": "Riders on the Storm",
+                "artist": "The Doors"
+              },
+              {
+                "_id": "63733e7e3d230c1e60a0ab41",
+                "name": "Highway to Hell",
+                "artist": "AC/DC"
+              },
+              {
+                "_id": "6373404f3d230c1e60a0ab6f",
+                "name": "Layla",
+                "artist": "Derek and the Dominos"
+              },
+              {
+                "_id": "6373482df3a55d4da4fff2d2",
+                "name": "Bohemian Rhapsody",
+                "artist": "Queen"
+              },
+              {
+                "_id": "637340893d230c1e60a0ab79",
+                "name": "Sultans of Swing",
+                "artist": "Dire Straits"
+              },
+              {
+                "_id": "6373417f3d230c1e60a0aba1",
+                "name": "Free Bird",
+                "artist": "Lynyrd Skynyrd"
+              }
             ]
           }
         }
@@ -535,17 +737,13 @@
       "Users": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "example": 77
+          "_id": {
+            "type": "string",
+            "example": "63841631347d05c98f339fa6"
           },
           "username": {
             "type": "string",
-            "example": "ShadowWarrior777"
-          },
-          "password": {
-            "type": "string",
-            "example": "baleiasazuis123"
+            "example": "fulano-de-tal"
           },
           "firstName": {
             "type": "string",
@@ -557,11 +755,139 @@
           },
           "phone": {
             "type": "string",
-            "example": "99237-1991"
+            "example": "+00 00 0000-0002"
           },
           "email": {
             "type": "string",
-            "example": "fulanodetal@teste.com"
+            "example": "fulanodetal@playlistenin.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-11-28T02:00:17.441Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2022-11-28T02:00:17.441Z"
+          }
+        }
+      },
+      "UserRegistration": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "fulano-de-tal"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Fulano"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "de Tal"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+00 00 0000-0002"
+          },
+          "email": {
+            "type": "string",
+            "example": "fulanodetal@playlistenin.com"
+          }
+        }
+      },
+      "RegisteredUser": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Registro efetuado com sucesso"
+          },
+          "user": {
+            "type": "object",
+            "example": {
+              "_id": "63841631347d05c98f339fa6",
+              "username": "fulano-de-tal",
+              "firstName": "Fulano",
+              "lastName": "de Tal",
+              "phone": "+00 00 0000-0002",
+              "email": "fulanodetal@playlistenin.com"
+            }
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0NjM3YWNjY2RiYTE1NGJhOTRlZGUiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY5NjIwNjAyfQ.lXw8xoQ5NSp4OV_L0thZt7NQkiaau9R9rhQsnePv7vY"
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "fulano-de-tal"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        }
+      },
+      "SuccessfulLogin": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Login efetuado com sucesso"
+          },
+          "user": {
+            "type": "object",
+            "example": {
+              "_id": "63841631347d05c98f339fa6",
+              "username": "fulano-de-tal",
+              "firstName": "Fulano",
+              "lastName": "de Tal",
+              "phone": "+00 00 0000-0002",
+              "email": "fulanodetal@playlistenin.com"
+            }
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0NjM3YWNjY2RiYTE1NGJhOTRlZGUiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY5NjIwNjAyfQ.lXw8xoQ5NSp4OV_L0thZt7NQkiaau9R9rhQsnePv7vY"
+          }
+        }
+      },
+      "AdminRequest": {
+        "type": "object",
+        "properties": {
+          "isAdmin": {
+            "type": "boolean",
+            "example": "true"
+          }
+        }
+      },
+      "AdminResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Status de administrador atualizado com sucesso"
+          },
+          "user": {
+            "type": "object",
+            "example": {
+              "_id": "63841631347d05c98f339fa6",
+              "username": "fulano-de-tal",
+              "isAdmin": true
+            }
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mzg0NjM3YWNjY2RiYTE1NGJhOTRlZGUiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNjY5NjIwNjAyfQ.lXw8xoQ5NSp4OV_L0thZt7NQkiaau9R9rhQsnePv7vY"
           }
         }
       }
