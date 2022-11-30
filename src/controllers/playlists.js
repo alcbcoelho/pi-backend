@@ -35,18 +35,13 @@ async function create(req, res) {
   });
 
   await (await playlist.save()).populate(populateOptions)
-    .then(doc => {
-      //
-      // req.body.songs.forEach(song => integrateSongWithDB(song))
-      //
-      return res.status(201).json(doc);
-    })
+    .then(doc => res.status(201).json(doc))
     .catch(err => {
       if (err.errors) {
         const errorMessage = {};
 
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
+        return res.status(422).json(errorMessage);
       }
 
       return res.status(500).json(err.message);
@@ -54,12 +49,10 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-  // REFATORAR V
   const author = await Playlist.findById(req.params.id).then(doc => doc.author);
   const isPlaylistOwner = (req.userId != author) ? false : true;
   
   if (!isPlaylistOwner && !req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });
-  // REFATORAR ^
   
   const model = {
     name: req.body.name,
@@ -85,8 +78,6 @@ async function update(req, res) {
       return res.status(404).json({ erro: "Playlist não encontrada" });
     })
     .catch(err => {
-
-      // 400 - BAD REQUEST
       if ((req.params.id.length !== 24) || err.name === "CastError") {
         const badRequestMessage = {};
   
@@ -101,18 +92,15 @@ async function update(req, res) {
         return res.status(400).json(badRequestMessage);
       }
 
-      // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message);
     });
 }
 
 async function remove(req, res) {
-  // REFATORAR V
   const author = await Playlist.findById(req.params.id).then(doc => doc.author);
   const isPlaylistOwner = (req.userId != author) ? false : true;
 
   if (!isPlaylistOwner && !req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });
-  // REFATORAR ^
 
   await Playlist.findByIdAndDelete(req.params.id)
     .then(doc => {

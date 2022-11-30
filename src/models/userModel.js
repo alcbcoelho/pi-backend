@@ -5,7 +5,6 @@ const { Schema } = mongoose;
 const message = require("../misc/validationMessages");
 const { schema } = require("./songModel");
 
-// vvv EXPORTAR P/ ARQUIVO SEPARADO vvv
 function capitalizeString(str) {
   function startsWith(i, regex) {
     return i === 0 && (!regex.test(str));
@@ -17,14 +16,8 @@ function capitalizeString(str) {
     capitalizedStr = (startsWith(i, /^de /i) || str[i - 1] === " ") ? capitalizedStr + str[i].toUpperCase() : capitalizedStr + str[i];
   }
 
-  // console.log(precededByWhitespace())
-
   return capitalizedStr;
 }
-
-// async function generateHashedPassword(next) {
-  
-// }
 
 function formatPhoneNumber(str) {
   const segments = [];
@@ -42,8 +35,7 @@ function formatPhoneNumber(str) {
     segments.push(str.slice(start, end));
     if (overrideStart) start = end;
   }
-} // qnd for exportar p/ arquivo separado, usar essa função p/ formatar o número de telefone referenciado por req.body[registeredField] na linha 54 do controller de usuário (controllers/users.js)
-//
+}
 
 const userSchema = new Schema({
   username: {

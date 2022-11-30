@@ -18,14 +18,14 @@ async function showAll(req, res) {
     await User.findOne({ username: req.query.username })
       .then(doc => {
         if (doc) return res.status(200).json(doc);
-        return res.status(404).json({ erro: "Usuário não encontrado" });  // REFATORAR
+        return res.status(404).json({ erro: "Usuário não encontrado" });
       })
-      .catch(err => res.status(500).json(err.message));   //
+      .catch(err => res.status(500).json(err.message));
   } else {
     await User.find()
       .then(doc => {
         if (doc.length) return res.status(200).json(doc);
-        return res.status(404).json({ erro: "Não há usuários disponíveis" });   //
+        return res.status(404).json({ erro: "Não há usuários disponíveis" });
       })
       .catch(err => res.status(500).json(err.message));
   }
@@ -35,13 +35,11 @@ async function show(req, res) {
   await User.findOne({ _id: ObjectId(req.params.id) })
     .then(doc => {
       if (doc) return res.status(200).json(doc);
-      return res.status(404).json({ erro: "Usuário não encontrado" }); // REFATORAR
+      return res.status(404).json({ erro: "Usuário não encontrado" });
     })
     .catch(err => {
-      // 400 - BAD REQUEST
-      if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida" });  // TODO: RESOLVER
+      if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida" });
 
-      // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message)
     }); //
 }
@@ -56,11 +54,10 @@ async function register(req, res) {
       const successfulRegistration = {
         message: "Registro efetuado com sucesso",
         user: { _id, username, firstName, lastName, phone, email },
-        token: /* jwt.sign({ _id: ObjectId(doc._id), isAdmin: doc.isAdmin }, config.tokenSecret) */ generateToken(doc)
+        token: generateToken(doc)
       }
 
       doc.password = undefined;
-      // doc.isAdmin = undefined;
       
       return res.status(201).json(successfulRegistration);
     })
@@ -70,7 +67,7 @@ async function register(req, res) {
         const errorMessage = {};
         
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
+        return res.status(422).json(errorMessage);
       }
 
       if (err.code === 11000) {
@@ -90,7 +87,6 @@ async function register(req, res) {
         }
 
         return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}` });
-        // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
       return res.status(500).json(err.message);
@@ -110,7 +106,7 @@ async function authenticate(req, res) {
       const successfulLoginMessage = {
         message: "Login efetuado com sucesso",
         user: await User.findById(doc._id).select({ createdAt: 0, updatedAt: 0, __v: 0 }),
-        token: /* jwt.sign({ _id: ObjectId(doc._id), isAdmin: doc.isAdmin }, config.tokenSecret) */ generateToken(doc)
+        token: generateToken(doc)
       }
       
       return res.json(successfulLoginMessage);
@@ -143,7 +139,7 @@ async function update(req, res) {
       const errorMessage = {};
       
       Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-      return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
+      return res.status(422).json(errorMessage);
     }
 
     if (err.code === 11000) {
@@ -163,7 +159,6 @@ async function update(req, res) {
       }
 
       return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}` });
-      // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
     }
 
     return res.status(500).json(err.message);
@@ -171,7 +166,7 @@ async function update(req, res) {
 }
 
 async function updateById(req, res) {
-  if (!req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });  //
+  if (!req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });
 
   const model = { isAdmin: req.body.isAdmin };
   
@@ -188,7 +183,7 @@ async function updateById(req, res) {
           const { _id, username, isAdmin } = doc;
           const successfulUpdate = {
             message: "Status de administrador atualizado com sucesso",
-            user: { _id, username, isAdmin } /* User.findById(doc._id).select({ isAdmin: 1, createdAt: 0, updatedAt: 0, __v: 0 }) */,
+            user: { _id, username, isAdmin },
             token: generateToken(doc)
           }
 
@@ -201,15 +196,9 @@ async function updateById(req, res) {
       
         return res.status(422).json(errorMessage);
       }
-      return res.status(404).json({ erro: "Usuário não encontrado" });  //
+      return res.status(404).json({ erro: "Usuário não encontrado" });
     })
     .catch(err => {
-      // console.log(err); //
-
-      // TODO: TENTAR RESOLVER DISPLAY DE ERRO DE VALIDAÇÃO
-      // "Validation failed: password: Senha deve conter no mínimo 6 caracteres."
-
-      // 400 - BAD REQUEST
       if (req.params.id.length !== 24 || err.name === "CastError") {
         const badRequestMessage = {};
 
@@ -222,7 +211,7 @@ async function updateById(req, res) {
         }
 
         return res.status(400).json(badRequestMessage);
-      } // refatorar
+      }
       
       if (err.code === 11000) {
         const errorMessage = {};
@@ -243,16 +232,14 @@ async function updateById(req, res) {
 
         errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}`; //
         return res.status(400).json(errorMessage);
-        // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
-      // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message);
     });
 }
 
 async function remove(req, res) {
-  if (!req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });  //
+  if (!req.isAdmin) return res.status(401).json({ erro: "Acesso não autorizado" });
 
   if (req.params.id === req.userId) return res.status(403).json({ erro: "Não é permitido deletar a própria conta" });
 
@@ -261,13 +248,11 @@ async function remove(req, res) {
   await User.findByIdAndDelete(req.params.id)
   .then(doc => {
     if (doc) return res.status(204).end();
-    return res.status(404).json({ erro: "Usuário não encontrado" });  // REFATORAR
+    return res.status(404).json({ erro: "Usuário não encontrado" });
   })
     .catch(err => {
-      // 400 - BAD REQUEST
       if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida" });
 
-      // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message)
     });
 }

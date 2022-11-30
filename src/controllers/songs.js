@@ -5,7 +5,6 @@ const { mandatoryField } = require("../misc/validationMessages");
 const filterOut__v = require("../misc/filterOut__v");
 
 async function showAllOrFilter(req, res) {
-  // TODO: ver se é possível implementar filtro sem case sensitive
   if (Object.keys(req.query).length) {
     if (req.query.name && req.query.artist) {
       await Song.findOne({ name: req.query.name, artist: req.query.artist })
@@ -61,14 +60,14 @@ async function create(req, res) {
         const errorMessage = {};
 
         Object.values(err.errors).forEach(modelField => (errorMessage[modelField.properties.path] = modelField.properties.message));
-        return res.status(422).json(errorMessage);  // TODO: criar uma função p/ esse tratamento de erro e importar p/ os 3 controllers
+        return res.status(422).json(errorMessage);
       }
 
       if (err.code === 11000) {
         const fields = Object.keys(err.keyValue);
         return res.status(400).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}` });
-      } // refatorar
-      // generateErrorIfAlreadyRegistered(req, res, err);
+      }
+
       return res.status(500).json(err.message);
     })
 }
@@ -97,7 +96,6 @@ async function update(req, res) {
     })
     .catch(err => {
 
-      // 400 - BAD REQUEST
       if (req.params.id.length !== 24 || err.name === "CastError") {
         const badRequestMessage = {};
 
@@ -110,9 +108,8 @@ async function update(req, res) {
         }
 
         return res.status(400).json(badRequestMessage);
-      } // refatorar
+      }
 
-      // 422 - UNPROCESSABLE ENTITY
       if (err.code === 11000) {
         const fields = Object.keys(err.keyValue);
         return res
@@ -122,10 +119,8 @@ async function update(req, res) {
               req.body[fields[0]]
             } - ${req.body[fields[1]]}`,
           });
-      } // refatorar
-      // generateErrorIfAlreadyRegistered(req, res, err);
+      }
 
-      // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message);
     });
 }
