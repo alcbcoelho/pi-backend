@@ -1,4 +1,5 @@
 node_modules/
+src/data.js
 notes.md
 to-do.md
 guia-api.md

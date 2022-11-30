@@ -1,7 +1,6 @@
 const express = require("express");
 const usersController = require("../controllers/users");
 const authMiddleware = require("../middlewares/authMiddleware");
-const hashMiddleware = require("../middlewares/hashMiddleware");
 const router = express.Router();
 
 router.get("", usersController.showAll);
@@ -12,7 +11,7 @@ router.post("/register", usersController.register);
 
 router.post("/login", usersController.authenticate)
 
-router.put("", authMiddleware/* [authMiddleware, hashMiddleware] */, usersController.update);
+router.put("", authMiddleware, usersController.update);
 
 router.put("/:id", authMiddleware, usersController.updateById);
 

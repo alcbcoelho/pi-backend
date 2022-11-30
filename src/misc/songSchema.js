@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const message = require("../validationMessages");
+const message = require("./validationMessages");
 
 const songSchema = new Schema({
     name: {

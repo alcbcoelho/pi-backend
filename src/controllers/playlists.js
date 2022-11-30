@@ -1,6 +1,6 @@
 const { ObjectId } = require("bson");
 const Playlist = require("../models/playlistModel");
-const { mandatoryField } = require("../validationMessages");
+const { mandatoryField } = require("../misc/validationMessages");
 
 const filterOut__v = require("../misc/filterOut__v");
 const populateOptions = { path: "author songs", select: "username name artist" };
@@ -11,7 +11,7 @@ async function showAll(req, res) {
   .select(filterOut__v)
   .then(doc => {
     if (doc.length) return res.status(200).json(doc);
-    return res.status(404).json({ erro: "Não há playlists disponíveis." });   //
+    return res.status(404).json({ erro: "Não há playlists disponíveis" });   //
   })
   .catch(err => res.status(500).json(err.message));
 }
@@ -22,7 +22,7 @@ async function show(req, res) {
     .select(filterOut__v)
     .then(doc => {
       if (doc) return res.status(200).json(doc);
-      return res.status(404).json({ erro: "Playlist não encontrada." });
+      return res.status(404).json({ erro: "Playlist não encontrada" });
     })
     .catch(err => res.status(500).json(err.message));
 }
@@ -82,7 +82,7 @@ async function update(req, res) {
 
         return res.status(422).json(errorMessage);
       }
-      return res.status(404).json({ erro: "Playlist não encontrada." });
+      return res.status(404).json({ erro: "Playlist não encontrada" });
     })
     .catch(err => {
 
@@ -91,11 +91,11 @@ async function update(req, res) {
         const badRequestMessage = {};
   
         if (req.params.id.length !== 24)
-          badRequestMessage.erro = "Sintaxe de ID inválida."
+          badRequestMessage.erro = "Sintaxe de ID inválida"
         else {
           badRequestMessage[
             err.path
-          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
+          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind})`;
         }
         
         return res.status(400).json(badRequestMessage);
@@ -117,7 +117,7 @@ async function remove(req, res) {
   await Playlist.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();
-      return res.status(404).json({ erro: "Playlist não encontrada." });
+      return res.status(404).json({ erro: "Playlist não encontrada" });
     })
     .catch(err => res.status(500).json(err.message));
 }

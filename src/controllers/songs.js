@@ -1,6 +1,6 @@
 const { ObjectId } = require("bson");
 const Song = require("../models/songModel");
-const { mandatoryField } = require("../validationMessages");
+const { mandatoryField } = require("../misc/validationMessages");
 
 const filterOut__v = require("../misc/filterOut__v");
 
@@ -12,7 +12,7 @@ async function showAllOrFilter(req, res) {
         .select(filterOut__v)
         .then(doc => {
           if (doc) return res.status(200).json(doc);
-          return res.status(404).json({ erro: "Música não encontrada." });
+          return res.status(404).json({ erro: "Música não encontrada" });
         })
         .catch(err => res.status(500).json(err.message));
     } else {
@@ -23,7 +23,7 @@ async function showAllOrFilter(req, res) {
         .then(doc => {
           if (doc.length) return res.status(200).json(doc);
   
-          const errorMessage = req.query.name ? "Música não encontrada." : "Artista especificado não encontrado.";  //
+          const errorMessage = req.query.name ? "Música não encontrada" : "Artista especificado não encontrado";  //
   
           return res.status(404).json({ erro: errorMessage });
         })
@@ -34,7 +34,7 @@ async function showAllOrFilter(req, res) {
     .select(filterOut__v)
     .then(doc => {
       if (doc.length) return res.status(200).json(doc);
-      return res.status(404).json({ erro: "Não há músicas disponíveis." });  //
+      return res.status(404).json({ erro: "Não há músicas disponíveis" });  //
     })
     .catch(err => res.status(500).json(err.message));
   }
@@ -44,7 +44,7 @@ async function show(req, res) {
   await Song.findOne({ _id: ObjectId(req.params.id) })
     .then(doc => {
       if (doc) return res.status(200).json(doc);
-      return res.status(404).json({ erro: "Música não encontrada." });   //
+      return res.status(404).json({ erro: "Música não encontrada" });   //
     })
     .catch(err => res.status(500).json(err.message));   //
 }
@@ -66,7 +66,7 @@ async function create(req, res) {
 
       if (err.code === 11000) {
         const fields = Object.keys(err.keyValue);
-        return res.status(400).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}.` });
+        return res.status(400).json({ erro: `Já consta um registro no sistema para ${req.body[fields[0]]} - ${req.body[fields[1]]}` });
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
       return res.status(500).json(err.message);
@@ -93,7 +93,7 @@ async function update(req, res) {
 
         return res.status(422).json(errorMessage);
       }
-      return res.status(404).json({ erro: "Música não encontrada." });   //
+      return res.status(404).json({ erro: "Música não encontrada" });   //
     })
     .catch(err => {
 
@@ -102,11 +102,11 @@ async function update(req, res) {
         const badRequestMessage = {};
 
         if (req.params.id.length !== 24)
-          badRequestMessage.erro = "Sintaxe de ID inválida."
+          badRequestMessage.erro = "Sintaxe de ID inválida"
         else {
           badRequestMessage[
             err.path
-          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
+          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind})`;
         }
 
         return res.status(400).json(badRequestMessage);
@@ -120,7 +120,7 @@ async function update(req, res) {
           .json({
             erro: `Já consta um registro no sistema para ${
               req.body[fields[0]]
-            } - ${req.body[fields[1]]}.`,
+            } - ${req.body[fields[1]]}`,
           });
       } // refatorar
       // generateErrorIfAlreadyRegistered(req, res, err);
@@ -136,7 +136,7 @@ async function remove(req, res) {
   Song.findByIdAndDelete(req.params.id)
     .then(doc => {
       if (doc) return res.status(204).end();
-      return res.status(404).json({ erro: "Música não encontrada." });  //
+      return res.status(404).json({ erro: "Música não encontrada" });  //
     })
     .catch(err => res.status(500).json(err.message));
 }

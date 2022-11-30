@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../config/env.json");
 const User = require("../models/userModel");
-const { mandatoryField } = require("../validationMessages");
+const { mandatoryField } = require("../misc/validationMessages");
 
 //
 
@@ -18,14 +18,14 @@ async function showAll(req, res) {
     await User.findOne({ username: req.query.username })
       .then(doc => {
         if (doc) return res.status(200).json(doc);
-        return res.status(404).json({ erro: "Usuário não encontrado." });  // REFATORAR
+        return res.status(404).json({ erro: "Usuário não encontrado" });  // REFATORAR
       })
       .catch(err => res.status(500).json(err.message));   //
   } else {
     await User.find()
       .then(doc => {
         if (doc.length) return res.status(200).json(doc);
-        return res.status(404).json({ erro: "Não há usuários disponíveis." });   //
+        return res.status(404).json({ erro: "Não há usuários disponíveis" });   //
       })
       .catch(err => res.status(500).json(err.message));
   }
@@ -35,11 +35,11 @@ async function show(req, res) {
   await User.findOne({ _id: ObjectId(req.params.id) })
     .then(doc => {
       if (doc) return res.status(200).json(doc);
-      return res.status(404).json({ erro: "Usuário não encontrado." }); // REFATORAR
+      return res.status(404).json({ erro: "Usuário não encontrado" }); // REFATORAR
     })
     .catch(err => {
       // 400 - BAD REQUEST
-      if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida." });  // TODO: RESOLVER
+      if (req.params.id.length !== 24) return res.status(400).json({ erro: "Sintaxe de ID inválida" });  // TODO: RESOLVER
 
       // 500 - INTERNAL SERVER ERROR
       return res.status(500).json(err.message)
@@ -89,7 +89,7 @@ async function register(req, res) {
             registeredFieldPT = "email";
         }
 
-        return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
+        return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}` });
         // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }
 
@@ -103,9 +103,9 @@ async function authenticate(req, res) {
   await User.findOne({ username })
     .select({ password: 1, isAdmin: 1 })
     .then(async doc => {
-      if (!doc) return res.status(404).json({ erro: "Usuário não cadastrado."});
+      if (!doc) return res.status(404).json({ erro: "Usuário não cadastrado"});
 
-      if (!(await bcrypt.compare(password, doc.password))) return res.status(401).json({ erro: "Senha incorreta." });
+      if (!(await bcrypt.compare(password, doc.password))) return res.status(401).json({ erro: "Senha incorreta" });
 
       const successfulLoginMessage = {
         message: "Login efetuado com sucesso",
@@ -162,7 +162,7 @@ async function update(req, res) {
           registeredFieldPT = "email";
       }
 
-      return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.` });
+      return res.status(400).json({ erro: `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}` });
       // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
     }
 
@@ -214,11 +214,11 @@ async function updateById(req, res) {
         const badRequestMessage = {};
 
         if (req.params.id.length !== 24)
-          badRequestMessage.erro = "Sintaxe de ID inválida.";
+          badRequestMessage.erro = "Sintaxe de ID inválida";
         else {
           badRequestMessage[
             err.path
-          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind}).`;
+          ] = `Tipo do valor inserido (${err.valueType}) não corresponde ao esperado (${err.kind})`;
         }
 
         return res.status(400).json(badRequestMessage);
@@ -241,7 +241,7 @@ async function updateById(req, res) {
             registeredFieldPT = "email";
         }
 
-        errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}.`; //
+        errorMessage.erro = `Já há um usuário registrado no sistema com o ${registeredFieldPT} ${req.body[registeredField]}`; //
         return res.status(400).json(errorMessage);
         // TODO: Usar o setter de telefone p/ formatar o valor do telefone na mensagem acima ^
       }

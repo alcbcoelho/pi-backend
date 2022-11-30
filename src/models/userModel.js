@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
-const message = require("../validationMessages");
+const message = require("../misc/validationMessages");
 const { schema } = require("./songModel");
 
 // vvv EXPORTAR P/ ARQUIVO SEPARADO vvv
